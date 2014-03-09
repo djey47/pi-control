@@ -1,7 +1,13 @@
 pi-control
 ==========
 
-Set of REST web-services to control/monitor ESXi hypervisor from always-ON device (e.g. Raspberry Pi)
+Set of web-services to control/monitor ESXi hypervisor from always-ON device (e.g. Raspberry Pi)
+
+
+Configuration:
+--------------
+See ./web-services/conf/pi-control.yml.
+You should define hostname and user to access ESXi hypervisor via SSH.
 
 
 How to use:
@@ -12,8 +18,8 @@ How to use:
 Enabled services:
 -----------------
 Target server must be accessed with SSH client on default port (22), without password (public key copied to authorized_keys).
-
 - /control/esxi/off : turns off hypervisor
+
 
 Ruby dependencies:
 ------------------
