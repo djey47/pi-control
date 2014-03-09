@@ -27,4 +27,3 @@ Runtime gems:
 
 Testing gems:
 - test-unit v2.5.5
-- minitest v5.2.3
