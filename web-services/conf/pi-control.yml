@@ -1,0 +1,4 @@
+# Main config file for pi-control
+esxi :
+  host-name : neo-esxi
+  user : root
