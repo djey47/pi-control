@@ -1,9 +1,9 @@
 # services.rb - REST http server
 
-require 'sinatra/base'
 require 'logger'
+require 'sinatra/base'
+require 'yaml'
 require_relative 'system_gateway'
-
 
 class Services < Sinatra::Base
 
@@ -17,7 +17,18 @@ class Services < Sinatra::Base
 
   def esxi_off
     @logger.info('[Services][esxi_off]')
-    @system_gateway.ssh('neo-esxi', 'root', 'poweroff')
+
+    begin
+      contents = YAML.load_file('../conf/pi-control.yml')
+      host_name = contents['esxi']['host-name']
+      user = contents['esxi']['user']
+    rescue => exception
+      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
+      #This is critical!
+      raise
+    end
+
+    @system_gateway.ssh(host_name, user, 'poweroff')
   end
 
   #config

@@ -39,6 +39,8 @@ class SystemGatewayMock
   end
 
   def ssh(host, user_name, command)
+    raise 'Undefined host' unless not host.nil?
+    raise 'Undefined user' unless not user_name.nil?
     raise "Unexpected command: #{command}" unless command == 'poweroff'
     @verify = true
   end
