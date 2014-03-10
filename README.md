@@ -17,6 +17,8 @@ How to use:
 -----------
 - To start pi-control : ruby ./web-services/rupees/pi_control.rb
 
+- To stop it : kill it !
+
 
 Enabled services:
 -----------------
@@ -26,8 +28,10 @@ Requirements:
 - Target server must be accessible from SSH client on default port (22), without password (public key copied to authorized_keys file).
 
 Service URLs:
+- /big_brother.json : display contents of big_brother.log file
 - /control/esxi/on : turns on hypervisor (uses wakeonlan)
 - /control/esxi/off : turns off hypervisor (uses ssh to connect, then poweroff)
+
 
 
 Ruby dependencies:

@@ -1,5 +1,6 @@
 # services.rb - REST http server
 
+require 'json'
 require 'logger'
 require 'sinatra/base'
 require 'yaml'
@@ -52,6 +53,13 @@ class Services < Sinatra::Base
     @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested device #{mac_address} to turn on.")
   end
 
+  def get_big_brother
+    @logger.info('[Services][big_brother.json]')
+
+    @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested big brother contents.")
+    File.new('../logs/big_brother.log').readlines
+  end
+
   #config
   set :port, 4600
   set :environment, :development
@@ -84,4 +92,18 @@ class Services < Sinatra::Base
       500
     end
   end
+
+  #Returns json with all big brother messages
+  get '/big_brother.json' do
+    begin
+      content_type :json
+      [200,
+        { :events => get_big_brother }.to_json
+      ]
+    rescue => exception
+      @logger.error("[Services][big_brother.json] #{exception.inspect}")
+      500
+    end
+  end
+
 end
