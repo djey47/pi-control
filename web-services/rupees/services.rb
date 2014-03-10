@@ -8,6 +8,9 @@ require_relative 'system_gateway'
 
 class Services < Sinatra::Base
 
+  BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
+  CONFIG_FILE_NAME = './web-services/conf/pi-control.yml'
+
   # To inject different gateways (real and mock)
   def initialize(system_gateway = SystemGateway.new)
     @system_gateway = system_gateway
@@ -15,17 +18,18 @@ class Services < Sinatra::Base
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
 
-    @big_brother = Logger.new('../logs/big_brother.log')
+    @big_brother = Logger.new(BIG_BROTHER_LOG_FILE_NAME)
     @logger.level = Logger::INFO
 
     super #Required for correct Sinatra init
   end
 
+
   def esxi_off
     @logger.info('[Services][esxi_off]')
 
     begin
-      contents = YAML.load_file('../conf/pi-control.yml')
+      contents = YAML.load_file(CONFIG_FILE_NAME)
       host_name = contents['esxi']['host-name']
       user = contents['esxi']['user']
     rescue => exception
@@ -41,7 +45,7 @@ class Services < Sinatra::Base
     @logger.info('[Services][esxi_on]')
 
     begin
-      contents = YAML.load_file('../conf/pi-control.yml')
+      contents = YAML.load_file(CONFIG_FILE_NAME)
       mac_address = contents['esxi']['mac-address']
       broadcast_address = contents['lan']['broadcast-address']
     rescue => exception
@@ -57,7 +61,7 @@ class Services < Sinatra::Base
     @logger.info('[Services][big_brother.json]')
 
     @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested big brother contents.")
-    File.new('../logs/big_brother.log').readlines
+    File.new(BIG_BROTHER_LOG_FILE_NAME).readlines
   end
 
   #config
@@ -107,3 +111,20 @@ class Services < Sinatra::Base
   end
 
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

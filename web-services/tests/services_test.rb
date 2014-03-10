@@ -16,7 +16,7 @@ class ServicesTest < Test::Unit::TestCase
   def setup
     @system_gateway = SystemGatewayMock.new
     @json_parser_opts = {:symbolize_names => true}
-    @big_brother_file_name = '../logs/big_brother.log'
+    @big_brother_file_name = Services::BIG_BROTHER_LOG_FILE_NAME
   end
 
   def test_esxi_off_should_call_gateway_and_return_http_204
