@@ -25,10 +25,26 @@ class Services < Sinatra::Base
     rescue => exception
       @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
       #This is critical!
-      raise
+      raise 'Invalid configuration'
     end
 
     @system_gateway.ssh(host_name, user, 'poweroff')
+  end
+
+  def esxi_on
+    @logger.info('[Services][esxi_on]')
+
+    begin
+      contents = YAML.load_file('../conf/pi-control.yml')
+      mac_address = contents['esxi']['mac-address']
+      broadcast_address = contents['lan']['broadcast-address']
+    rescue => exception
+      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
+      #This is critical!
+      raise 'Invalid configuration'
+    end
+
+    @system_gateway.wakeonlan(mac_address, broadcast_address)
   end
 
   #config
@@ -42,7 +58,7 @@ class Services < Sinatra::Base
     [200, 'pi-control - webservices are alive :)']
   end
 
-  #Turns off esxi
+  #Turns esxi off
   get '/control/esxi/off' do
     begin
       esxi_off
@@ -51,7 +67,16 @@ class Services < Sinatra::Base
       @logger.error("[Services][esxi_off] #{exception.inspect}")
       500
     end
-
   end
 
+  #Turns esxi on
+  get '/control/esxi/on' do
+    begin
+      esxi_on
+      204
+    rescue => exception
+      @logger.error("[Services][esxi_on] #{exception.inspect}")
+      500
+    end
+  end
 end

@@ -22,8 +22,17 @@ class ServicesTest < Test::Unit::TestCase
 
     get '/control/esxi/off'
 
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
     assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_on_should_call_gateway_and_return_http_204
+    @system_gateway.verify = false
+
+    get '/control/esxi/on'
+
+    assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end
 end
 
@@ -42,6 +51,12 @@ class SystemGatewayMock
     raise 'Undefined host' unless not host.nil?
     raise 'Undefined user' unless not user_name.nil?
     raise "Unexpected command: #{command}" unless command == 'poweroff'
+    @verify = true
+  end
+
+  def wakeonlan(mac_address, broadcast_address)
+    raise 'Undefined server MAC address' unless not mac_address.nil?
+    raise 'Undefined LAN broadcast address' unless not broadcast_address.nil?
     @verify = true
   end
 end

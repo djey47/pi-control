@@ -20,8 +20,14 @@ How to use:
 
 Enabled services:
 -----------------
-Target server must be accessed with SSH client on default port (22), without password (public key copied to authorized_keys).
-- /control/esxi/off : turns off hypervisor
+
+Requirements:
+- Client must have ssh and wakeonlan utilities available
+- Target server must be accessible from SSH client on default port (22), without password (public key copied to authorized_keys file).
+
+Service URLs:
+- /control/esxi/on : turns on hypervisor (uses wakeonlan)
+- /control/esxi/off : turns off hypervisor (uses ssh to connect, then poweroff)
 
 
 Ruby dependencies:
