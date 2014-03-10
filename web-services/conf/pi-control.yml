@@ -1,4 +1,7 @@
 # Main config file for pi-control
 esxi :
-  host-name : neo-esxi
-  user : root
+  host-name : fooxi
+  user : foo
+  mac-address : FF:FF:FF:FF:FF:FF
+lan :
+  broadcast-address : 255.255.255.0

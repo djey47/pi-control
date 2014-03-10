@@ -6,8 +6,11 @@ Set of web-services to control/monitor ESXi hypervisor from always-ON device (e.
 
 Configuration:
 --------------
-See ./web-services/conf/pi-control.yml.
+Watch and update ./web-services/conf/pi-control.yml.
+
 You should define hostname and user to access ESXi hypervisor via SSH.
+
+Also, app requires MAC address of hypervisor and LAN broadcast address.
 
 
 How to use:
