@@ -10,8 +10,13 @@ class Services < Sinatra::Base
   # To inject different gateways (real and mock)
   def initialize(system_gateway = SystemGateway.new)
     @system_gateway = system_gateway
+
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
+
+    @big_brother = Logger.new('../logs/big_brother.log')
+    @logger.level = Logger::INFO
+
     super #Required for correct Sinatra init
   end
 
@@ -24,11 +29,11 @@ class Services < Sinatra::Base
       user = contents['esxi']['user']
     rescue => exception
       @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
-      #This is critical!
-      raise 'Invalid configuration'
+      raise('Invalid configuration')
     end
 
     @system_gateway.ssh(host_name, user, 'poweroff')
+    @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested #{host_name} to turn off.")
   end
 
   def esxi_on
@@ -40,11 +45,11 @@ class Services < Sinatra::Base
       broadcast_address = contents['lan']['broadcast-address']
     rescue => exception
       @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
-      #This is critical!
-      raise 'Invalid configuration'
+      raise('Invalid configuration')
     end
 
     @system_gateway.wakeonlan(mac_address, broadcast_address)
+    @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested device #{mac_address} to turn on.")
   end
 
   #config
