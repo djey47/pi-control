@@ -28,6 +28,7 @@ Enabled services:
 Requirements:
 - Client must have ssh and wakeonlan utilities available
 - Target server must be accessible from SSH client on default port (22), without password (public key copied to authorized_keys file).
+- Target server IP must be in known_hosts files on source ! Otherwise esxi/off command will fail. To do this, use ssh to once connect target server manually.
 
 Service URLs:
 - /big_brother.json : display contents of big_brother.log file
