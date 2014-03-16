@@ -1,4 +1,6 @@
 # Main config file for pi-control
+app :
+  is-production : true
 esxi :
   host-name : fooxi
   user : foo

@@ -24,7 +24,6 @@ class Services < Sinatra::Base
     super #Required for correct Sinatra init
   end
 
-
   def esxi_off
     @logger.info('[Services][esxi_off]')
 
@@ -65,8 +64,19 @@ class Services < Sinatra::Base
   end
 
   #config
+  begin
+    contents = YAML.load_file(CONFIG_FILE_NAME)
+    is_production = contents['app']['is-production']
+  rescue
+    raise('Invalid configuration')
+  end
+
   set :port, 4600
-  set :environment, :development
+  if is_production
+    set :environment, :production
+  else
+    set :environment, :development
+  end
   set :show_exceptions, true
 
   #Heartbeat
@@ -102,7 +112,7 @@ class Services < Sinatra::Base
     begin
       content_type :json
       [200,
-        { :events => get_big_brother }.to_json
+       {:events => get_big_brother}.to_json
       ]
     rescue => exception
       @logger.error("[Services][big_brother.json] #{exception.inspect}")
