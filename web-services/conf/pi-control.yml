@@ -6,4 +6,4 @@ esxi :
   user : foo
   mac-address : FF:FF:FF:FF:FF:FF
 lan :
-  broadcast-address : 255.255.255.0
+  broadcast-address : 192.168.1.255
