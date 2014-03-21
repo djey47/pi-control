@@ -6,6 +6,7 @@ require 'sinatra/base'
 require 'yaml'
 require_relative 'system_gateway'
 
+#noinspection RailsParamDefResolve
 class Services < Sinatra::Base
 
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
@@ -37,7 +38,7 @@ class Services < Sinatra::Base
     end
 
     @system_gateway.ssh(host_name, user, 'poweroff')
-    @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested #{host_name} to turn off.")
+    @big_brother.info("IP #{request.ip} has just requested #{host_name} to turn off.")
   end
 
   def esxi_on
@@ -53,13 +54,13 @@ class Services < Sinatra::Base
     end
 
     @system_gateway.wakeonlan(mac_address, broadcast_address)
-    @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested device #{mac_address} to turn on.")
+    @big_brother.info("IP #{request.ip} has just requested device #{mac_address} to turn on.")
   end
 
   def get_big_brother
     @logger.info('[Services][big_brother.json]')
 
-    @big_brother.info("IP #{@env['REMOTE_ADDR']} has just requested big brother contents.")
+    @big_brother.info("IP #{request.ip} has just requested big brother contents.")
     File.new(BIG_BROTHER_LOG_FILE_NAME).readlines
   end
 
