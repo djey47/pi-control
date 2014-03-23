@@ -17,7 +17,7 @@ class Services < Sinatra::Base
     @system_gateway = system_gateway
 
     @logger = Logger.new(STDOUT)
-    @logger.level = Logger::DEBUG
+    @logger.level = Logger::INFO
 
     @big_brother = Logger.new(BIG_BROTHER_LOG_FILE_NAME)
     @big_brother.level = Logger::INFO
