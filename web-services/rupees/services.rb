@@ -113,6 +113,10 @@ class Services < Sinatra::Base
   end
   set :show_exceptions, true
 
+  #Fixes 'downstrrzam app not set' error
+  get '/favicon.ico' do
+  end
+
   #Heartbeat
   get '/' do
     @logger.info('[Services] Heartbeat!')
