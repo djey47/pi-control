@@ -78,7 +78,7 @@ class Services < Sinatra::Base
       raise('Invalid configuration')
     end
 
-    out = @system_gateway.ssh(host_name, user, 'vmsvc/getallvms')
+    out = @system_gateway.ssh(host_name, user, 'vim-cmd vmsvc/getallvms')
 
     vms = []
     out.split('\n').each_with_index do |line, index|
