@@ -17,10 +17,10 @@ class Services < Sinatra::Base
     @system_gateway = system_gateway
 
     @logger = Logger.new(STDOUT)
-    @logger.level = Logger::INFO
+    @logger.level = Logger::DEBUG
 
     @big_brother = Logger.new(BIG_BROTHER_LOG_FILE_NAME)
-    @logger.level = Logger::INFO
+    @big_brother.level = Logger::INFO
 
     super #Required for correct Sinatra init
   end
@@ -62,6 +62,39 @@ class Services < Sinatra::Base
 
     @big_brother.info("IP #{request.ip} has just requested big brother contents.")
     File.new(BIG_BROTHER_LOG_FILE_NAME).readlines
+  end
+
+  def get_virtual_machines
+    @logger.info('[Services][vms.json]')
+
+    @big_brother.info("IP #{request.ip} has just requested virtual machines list.")
+
+    begin
+      contents = YAML.load_file(CONFIG_FILE_NAME)
+      host_name = contents['esxi']['host-name']
+      user = contents['esxi']['user']
+    rescue => exception
+      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
+      raise('Invalid configuration')
+    end
+
+    out = @system_gateway.ssh(host_name, user, 'vmsvc/getallvms')
+
+    vms = []
+    out.split('\n').each_with_index do |line, index|
+      # First line is ignored (header)
+      if index != 0
+        id = line[0..6].strip
+        name = line[7..37].strip
+        guest_os = line[107..129].strip
+
+        @logger.debug("id=#{id}, name=#{name}, guest_os=#{guest_os}")
+
+        vms << VirtualMachine.new(id, name, guest_os)
+      end
+
+    end
+    vms
   end
 
   #config
@@ -117,6 +150,19 @@ class Services < Sinatra::Base
       ]
     rescue => exception
       @logger.error("[Services][big_brother.json] #{exception.inspect}")
+      500
+    end
+  end
+
+  #Returns json with all available virtual machines
+  get '/control/esxi/vms.json' do
+    begin
+      content_type :json
+      [200,
+       {:virtualMachines => get_virtual_machines}.to_json
+      ]
+    rescue => exception
+      @logger.error("[Services][vms.json] #{exception.inspect}")
       500
     end
   end

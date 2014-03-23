@@ -14,6 +14,7 @@ class SystemGateway
     @logger.info("[SystemGateway][ssh] Executing #{cmd}...")
     out = `#{cmd}`
     @logger.info("[SystemGateway][ssh] Command ended. Output: #{out}")
+    out
   end
 
   # Wakes device with specified mac address

@@ -31,10 +31,10 @@ Enabled services:
 - Target server IP must be in *known_hosts* files on source ! Otherwise esxi/off command will fail. To do this, use *ssh* to once connect target server manually.
 
 ### Service URLs:
-- **/big_brother.json** : displays contents of *big_brother.log* file
+- **/big_brother.json** : returns contents of *big_brother.log* file
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
-
+- **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
 
 
 Ruby dependencies:
