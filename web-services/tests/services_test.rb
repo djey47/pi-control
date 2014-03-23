@@ -103,7 +103,7 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_kind_of(Array, parsed_object[:virtualMachines])
-    assert(parsed_object[:virtualMachines].size == 4)
+    assert_equal(4, parsed_object[:virtualMachines].size, 'array size mismatch')
     vm = parsed_object[:virtualMachines][0]
     assert(vm[:id] == '13', 'id attribute mismatch')
     assert(vm[:name] == 'xpenology-3810-esxi-1.1', 'name attribute mismatch')
@@ -129,7 +129,8 @@ class SystemGatewayMock
     if command == 'poweroff'
       out = ''
     elsif command == 'vim-cmd vmsvc/getallvms'
-      out = 'Vmid               Name                                              File                                        Guest OS         Version   Annotation\n13     xpenology-3810-esxi-1.1        [Transverse] xpenology-3810-esxi/xpenology-3810-esxi.vmx             other26xLinux64Guest   vmx-09              \n14     xpenology-3810-esxi-1.1-test   [Transverse] xpenology-3810-esxi-test/xpenology-3810-esxi-test.vmx   other26xLinux64Guest   vmx-09              \n15     xpenology-dsm5b-test           [Transverse] xpenology-dsm5-test/xpenology-dsm5-test.vmx             other26xLinux64Guest   vmx-09              \n4      xubuntu-neo                    [Transverse] xubuntu-neo/xubuntu-neo.vmx                             ubuntu64Guest          vmx-08              '
+      # Important : use double quotes here to taken new lines into account !!
+      out = "Vmid               Name                                              File                                        Guest OS         Version   Annotation\n13     xpenology-3810-esxi-1.1        [Transverse] xpenology-3810-esxi/xpenology-3810-esxi.vmx             other26xLinux64Guest   vmx-09              \n14     xpenology-3810-esxi-1.1-test   [Transverse] xpenology-3810-esxi-test/xpenology-3810-esxi-test.vmx   other26xLinux64Guest   vmx-09              \n15     xpenology-dsm5b-test           [Transverse] xpenology-dsm5-test/xpenology-dsm5-test.vmx             other26xLinux64Guest   vmx-09              \n4      xubuntu-neo                    [Transverse] xubuntu-neo/xubuntu-neo.vmx                             ubuntu64Guest          vmx-08              \n"
    else
     raise "Unexpected command: #{command}"
    end

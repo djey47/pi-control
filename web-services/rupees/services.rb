@@ -5,6 +5,7 @@ require 'logger'
 require 'sinatra/base'
 require 'yaml'
 require_relative 'system_gateway'
+require_relative 'model/virtual_machine'
 
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
@@ -81,7 +82,8 @@ class Services < Sinatra::Base
     out = @system_gateway.ssh(host_name, user, 'vim-cmd vmsvc/getallvms')
 
     vms = []
-    out.split('\n').each_with_index do |line, index|
+    # Note : use double quotes with symbols
+    out.split("\n").each_with_index do |line, index|
       # First line is ignored (header)
       if index != 0
         id = line[0..6].strip
