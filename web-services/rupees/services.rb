@@ -6,12 +6,16 @@ require 'sinatra/base'
 require 'yaml'
 require_relative 'system_gateway'
 require_relative 'model/virtual_machine'
+require_relative 'model/v_m_not_found_error'
 
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
 
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
   CONFIG_FILE_NAME = './web-services/conf/pi-control.yml'
+
+  VM_POWERED_ON = 'Powered on'
+  VM_POWERED_OFF = 'Powered off'
 
   # To inject different gateways (real and mock)
   def initialize(system_gateway = SystemGateway.new)
@@ -99,6 +103,43 @@ class Services < Sinatra::Base
     vms
   end
 
+  def get_virtual_machine_status(id)
+    @logger.info('[Services][status.json]')
+
+    @big_brother.info("IP #{request.ip} has just requested status of virtual machine ##{id}.")
+
+    begin
+      contents = YAML.load_file(CONFIG_FILE_NAME)
+      host_name = contents['esxi']['host-name']
+      user = contents['esxi']['user']
+    rescue => exception
+      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
+      raise('Invalid configuration')
+    end
+
+    out = @system_gateway.ssh(host_name, user, "vim-cmd vmsvc/power.getstate #{id}")
+
+    lines = out.split("\n")
+
+    if lines.length == 2
+      # First line is ignored
+      status_label = lines[1]
+
+      @logger.debug("id=#{id}, status=#{status_label}")
+
+      if status_label == VM_POWERED_ON
+        vm_status = 'ON'
+      elsif status_label == VM_POWERED_OFF
+        vm_status = 'OFF'
+      else
+        vm_status = '???'
+      end
+    else
+      raise(VMNotFoundError.new, "Invalid VM id=#{id}")
+    end
+    vm_status
+  end
+
   #config
   begin
     contents = YAML.load_file(CONFIG_FILE_NAME)
@@ -173,6 +214,21 @@ class Services < Sinatra::Base
     end
   end
 
+  #Returns json with status of specified virtual machine
+  get '/control/esxi/vm/:id/status.json' do |id|
+    begin
+      content_type :json
+      [200,
+       {:status => get_virtual_machine_status(id)}.to_json
+      ]
+    rescue VMNotFoundError => err
+      @logger.error("[Services][status.json] #{err.inspect}")
+      404
+    rescue => exception
+      @logger.error("[Services][status.json] #{exception.inspect}")
+      500
+    end
+  end
 end
 
 
