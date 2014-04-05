@@ -35,7 +35,7 @@ Enabled services:
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
-- **/control/esxi/vm/vm_id/status.json** : returns status (ON/OFF) of specified virtual machine
+- **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine
 
 
 Ruby dependencies:
