@@ -1,7 +1,7 @@
 pi-control
 ==========
 
-Set of web-services to control/monitor ESXi hypervisor from always-ON device (e.g. Raspberry Pi)
+Set of web-services to control/monitor ESXi hypervisor from a linux-based, always-ON device (e.g. Raspberry Pi)
 
 
 Configuration:
@@ -12,7 +12,7 @@ Watch and update *./web-services/conf/pi-control.yml*:
 
 - Define esxi/hostname and esxi/user params for app to access ESXi hypervisor via SSH.
 
-- Also, it requires MAC address of hypervisor (esxi/mac-address) and LAN broadcast address (lan/broadcast-adress).
+- Also requires MAC address of hypervisor (esxi/mac-address) and LAN broadcast address (lan/broadcast-adress).
 
 
 How to use:
@@ -35,11 +35,12 @@ Enabled services:
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
+- **/control/esxi/vm/<vm_id>/status.json** : returns status (ON/OFF) of specified virtual machine
 
 
 Ruby dependencies:
 ------------------
-(core 2.0.0-p247)
+(dev on core 2.0.0-p247)
 
 ### Runtime gems:
 - sinatra v1.4.4

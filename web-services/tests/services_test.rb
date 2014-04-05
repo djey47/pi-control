@@ -76,6 +76,19 @@ class ServicesTest < Test::Unit::TestCase
     assert(big_brother_new_contents.last.include?(' has just requested virtual machines list.'))
   end
 
+  def test_esxi_vm_status_should_tell_big_brother
+    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
+
+    get '/control/esxi/vm/1/status.json'
+
+    assert(File.exists?(@big_brother_file_name))
+
+    big_brother_new_contents = File.new(@big_brother_file_name).readlines
+    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
+
+    assert(big_brother_new_contents.last.include?(' has just requested status of virtual machine #1.'))
+  end
+
   def test_big_brother_should_return_json_and_http_200
     get '/big_brother.json'
 
@@ -109,9 +122,23 @@ class ServicesTest < Test::Unit::TestCase
     assert(vm[:name] == 'xpenology-3810-esxi-1.1', 'name attribute mismatch')
     assert(vm[:guest_os] == 'other26xLinux64Guest', 'guest_os attribute mismatch')
   end
+
+  def test_esxi_vm_status_return_json_and_http_200
+    get '/control/esxi/vm/1/status.json'
+
+    assert_equal(200, last_response.status)
+    parsed_object = JSON.parse(last_response.body, @json_parser_opts)
+    assert_equal('ON', parsed_object[:status])
+  end
+
+  def test_esxi_vm_status_invalid_vm_return_http_404
+    get '/control/esxi/vm/0/status.json'
+
+    assert_equal(404, last_response.status)
+  end
 end
 
-# Used for testing
+# Used for testing : mocks system calls
 class SystemGatewayMock
 
   attr_accessor :verify
@@ -131,12 +158,15 @@ class SystemGatewayMock
     elsif command == 'vim-cmd vmsvc/getallvms'
       # Important : use double quotes here to taken new lines into account !!
       out = "Vmid               Name                                              File                                        Guest OS         Version   Annotation\n13     xpenology-3810-esxi-1.1        [Transverse] xpenology-3810-esxi/xpenology-3810-esxi.vmx             other26xLinux64Guest   vmx-09              \n14     xpenology-3810-esxi-1.1-test   [Transverse] xpenology-3810-esxi-test/xpenology-3810-esxi-test.vmx   other26xLinux64Guest   vmx-09              \n15     xpenology-dsm5b-test           [Transverse] xpenology-dsm5-test/xpenology-dsm5-test.vmx             other26xLinux64Guest   vmx-09              \n4      xubuntu-neo                    [Transverse] xubuntu-neo/xubuntu-neo.vmx                             ubuntu64Guest          vmx-08              \n"
-   else
-    raise "Unexpected command: #{command}"
-   end
-
+    elsif command == 'vim-cmd vmsvc/power.getstate 1'
+      out = "Retrieved runtime info\nPowered on\n"
+    elsif command == 'vim-cmd vmsvc/power.getstate 0'
+      out = ''
+    else
+      raise "Unexpected command: #{command}"
+    end
     @verify = true
-    out
+  out
   end
 
   def wakeonlan(mac_address, broadcast_address)
