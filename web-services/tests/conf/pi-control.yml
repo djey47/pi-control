@@ -1,0 +1,10 @@
+# Main config file for pi-control
+# Tests only
+app :
+  is-production : false
+esxi :
+  host-name : test
+  user : tester
+  mac-address : FF:FF:FF:FF:FF:FF
+lan :
+  broadcast-address : 192.168.1.255
