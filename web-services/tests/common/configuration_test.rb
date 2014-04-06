@@ -6,8 +6,8 @@ require_relative '../../rupees/common/configuration'
 
 class ConfigurationTest < Test::Unit::TestCase
 
-  CONFIG_FILE_NAME = '../conf/pi-control.yml'
-  INVALID_CONFIG_FILE_NAME = '../conf/pi-control_invalid.yml'
+  CONFIG_FILE_NAME = './web-services/tests/conf/pi-control.yml'
+  INVALID_CONFIG_FILE_NAME = './web-services/tests/conf/pi-control_invalid.yml'
 
   def test_get_should_return_conf_from_yaml
 
