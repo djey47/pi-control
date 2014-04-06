@@ -17,6 +17,8 @@ Watch and update *./web-services/conf/pi-control.yml*:
 
 How to use:
 -----------
+**Important : set current directory to app root or it won't be able to read config file**
+
 - To start pi-control : **ruby ./web-services/rupees/pi_control.rb**
 
 - To stop it : kill it !
