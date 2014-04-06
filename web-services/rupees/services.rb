@@ -3,8 +3,8 @@
 require 'json'
 require 'logger'
 require 'sinatra/base'
-require 'yaml'
 require_relative 'system_gateway'
+require_relative 'common/configuration'
 require_relative 'model/virtual_machine'
 require_relative 'model/v_m_not_found_error'
 
@@ -12,7 +12,6 @@ require_relative 'model/v_m_not_found_error'
 class Services < Sinatra::Base
 
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
-  CONFIG_FILE_NAME = './web-services/conf/pi-control.yml'
 
   VM_POWERED_ON = 'Powered on'
   VM_POWERED_OFF = 'Powered off'
@@ -33,14 +32,8 @@ class Services < Sinatra::Base
   def esxi_off
     @logger.info('[Services][esxi_off]')
 
-    begin
-      contents = YAML.load_file(CONFIG_FILE_NAME)
-      host_name = contents['esxi']['host-name']
-      user = contents['esxi']['user']
-    rescue => exception
-      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
-      raise('Invalid configuration')
-    end
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
 
     @system_gateway.ssh(host_name, user, 'poweroff')
     @big_brother.info("IP #{request.ip} has just requested #{host_name} to turn off.")
@@ -49,14 +42,8 @@ class Services < Sinatra::Base
   def esxi_on
     @logger.info('[Services][esxi_on]')
 
-    begin
-      contents = YAML.load_file(CONFIG_FILE_NAME)
-      mac_address = contents['esxi']['mac-address']
-      broadcast_address = contents['lan']['broadcast-address']
-    rescue => exception
-      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
-      raise('Invalid configuration')
-    end
+    mac_address = Configuration::get.esxi_mac_address
+    broadcast_address = Configuration::get.lan_broadcast_address
 
     @system_gateway.wakeonlan(mac_address, broadcast_address)
     @big_brother.info("IP #{request.ip} has just requested device #{mac_address} to turn on.")
@@ -74,14 +61,8 @@ class Services < Sinatra::Base
 
     @big_brother.info("IP #{request.ip} has just requested virtual machines list.")
 
-    begin
-      contents = YAML.load_file(CONFIG_FILE_NAME)
-      host_name = contents['esxi']['host-name']
-      user = contents['esxi']['user']
-    rescue => exception
-      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
-      raise('Invalid configuration')
-    end
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
 
     out = @system_gateway.ssh(host_name, user, 'vim-cmd vmsvc/getallvms')
 
@@ -108,14 +89,8 @@ class Services < Sinatra::Base
 
     @big_brother.info("IP #{request.ip} has just requested status of virtual machine ##{id}.")
 
-    begin
-      contents = YAML.load_file(CONFIG_FILE_NAME)
-      host_name = contents['esxi']['host-name']
-      user = contents['esxi']['user']
-    rescue => exception
-      @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")
-      raise('Invalid configuration')
-    end
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
 
     out = @system_gateway.ssh(host_name, user, "vim-cmd vmsvc/power.getstate #{id}")
 
@@ -141,15 +116,8 @@ class Services < Sinatra::Base
   end
 
   #config
-  begin
-    contents = YAML.load_file(CONFIG_FILE_NAME)
-    is_production = contents['app']['is-production']
-  rescue
-    raise('Invalid configuration')
-  end
-
   set :port, 4600
-  if is_production
+  if Configuration::get.app_is_production
     set :environment, :production
   else
     set :environment, :development
@@ -230,20 +198,3 @@ class Services < Sinatra::Base
     end
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
