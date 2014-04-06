@@ -119,14 +119,12 @@ class Services < Sinatra::Base
   set :port, 4600
   if Configuration::get.app_is_production
     set :environment, :production
+    set :show_exceptions, false
   else
     set :environment, :development
+    set :show_exceptions, true
   end
-  set :show_exceptions, true
-
-  #Fixes 'downstrrzam app not set' error
-  get '/favicon.ico' do
-  end
+  set :public_folder, File.dirname(__FILE__) + '/../public'
 
   #Heartbeat
   get '/' do
