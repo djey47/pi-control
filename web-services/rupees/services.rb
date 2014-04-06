@@ -7,6 +7,7 @@ require_relative 'system_gateway'
 require_relative 'common/configuration'
 require_relative 'model/virtual_machine'
 require_relative 'model/v_m_not_found_error'
+require_relative 'model/invalid_argument_error'
 
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
@@ -89,6 +90,8 @@ class Services < Sinatra::Base
 
     @big_brother.info("IP #{request.ip} has just requested status of virtual machine ##{id}.")
 
+    validate_vm_id(id)
+
     host_name = Configuration::get.esxi_host_name
     user = Configuration::get.esxi_user
 
@@ -114,6 +117,13 @@ class Services < Sinatra::Base
     end
     vm_status
   end
+
+  def validate_vm_id(id)
+    val = Integer(id) rescue nil
+    raise(InvalidArgumentError.new, "Invalid VM identifier: #{id}") if val.nil?
+  end
+
+
 
   #config
   set :port, 4600
@@ -187,6 +197,9 @@ class Services < Sinatra::Base
       [200,
        {:status => get_virtual_machine_status(id)}.to_json
       ]
+    rescue InvalidArgumentError => err
+      @logger.error("[Services][status.json] #{err.inspect}")
+      400
     rescue VMNotFoundError => err
       @logger.error("[Services][status.json] #{err.inspect}")
       404

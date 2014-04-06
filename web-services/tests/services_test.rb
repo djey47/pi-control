@@ -136,6 +136,12 @@ class ServicesTest < Test::Unit::TestCase
 
     assert_equal(404, last_response.status)
   end
+
+  def test_esxi_vm_status_script_injection_return_http_400
+    get '/control/esxi/vm/&%20cat%20toto.txt/status.json'
+
+    assert_equal(400, last_response.status)
+  end
 end
 
 # Used for testing : mocks system calls
