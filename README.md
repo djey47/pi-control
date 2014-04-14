@@ -59,9 +59,9 @@ API details:
 ------------
 
 ### HTTP status codes (will depend on services)
-- 200 : OK, JSON in response body
-- 204 : OK, no response body
-- 400 : KO, invalid argument specified
-- 404 : KO, asked item not found
-- 500 : KO, generic system error
-- 503 : KO, could not reach ESXI host preperly.
+- **200** : OK, JSON in response body
+- **204** : OK, no response body
+- **400** : KO, invalid argument specified
+- **404** : KO, asked item not found
+- **500** : KO, generic system error
+- **503** : KO, could not reach ESXI host preperly.
