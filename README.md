@@ -4,6 +4,20 @@ pi-control
 Set of web-services to control/monitor ESXi hypervisor from a linux-based, always-ON device (e.g. Raspberry Pi)
 
 
+Ruby dependencies:
+------------------
+(dev on core 2.0.0-p247)
+
+### Runtime gems:
+- sinatra v1.4.4
+  - rack v1.5.2
+  - tilt v1.4.1
+  - rack-protection v1.5.0
+
+### Testing gems:
+- test-unit v2.5.5
+
+
 Configuration:
 --------------
 Watch and update *./web-services/conf/pi-control.yml*:
@@ -33,6 +47,7 @@ Enabled services:
 - Target server IP must be in *known_hosts* files on source ! Otherwise esxi/off command will fail. To do this, use *ssh* to once connect target server manually.
 
 ### Service URLs:
+- **/** : just as a proof that server is alive :)
 - **/big_brother.json** : returns contents of *big_brother.log* file
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
@@ -40,15 +55,13 @@ Enabled services:
 - **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine
 
 
-Ruby dependencies:
-------------------
-(dev on core 2.0.0-p247)
+API details:
+------------
 
-### Runtime gems:
-- sinatra v1.4.4
-  - rack v1.5.2
-  - tilt v1.4.1
-  - rack-protection v1.5.0
-
-### Testing gems:
-- test-unit v2.5.5
+### HTTP status codes (will depend on services)
+- 200 : OK, JSON in response body
+- 204 : OK, no response body
+- 400 : KO, invalid argument specified
+- 404 : KO, asked item not found
+- 500 : KO, generic system error
+- 503 : KO, could not reach ESXI host preperly.
