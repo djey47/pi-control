@@ -1,6 +1,7 @@
 # system_gateway.rb - executes linux shell commands and applications
 
 require 'logger'
+require_relative 'model/ssh_error'
 
 class SystemGateway
   def initialize
@@ -13,6 +14,13 @@ class SystemGateway
     cmd = "ssh #{user_name}@#{host} #{command}"
     @logger.info("[SystemGateway][ssh] Executing #{cmd}...")
     out = `#{cmd}`
+
+    # SSH command failures (host unreachable, authentication errors)
+    if $?.to_i != 0
+      @logger.error("[SystemGateway][ssh] Command terminated abnormally: #{$?}")
+      raise(SSHError)
+    end
+
     @logger.info("[SystemGateway][ssh] Command ended. Output: #{out}")
     out
   end

@@ -8,6 +8,7 @@ require_relative 'common/configuration'
 require_relative 'model/virtual_machine'
 require_relative 'model/v_m_not_found_error'
 require_relative 'model/invalid_argument_error'
+require_relative 'model/ssh_error'
 
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
@@ -147,6 +148,9 @@ class Services < Sinatra::Base
     begin
       esxi_off
       204
+    rescue SSHError => exception
+      @logger.error("[Services][esxi_off] #{exception.inspect}")
+      503
     rescue => exception
       @logger.error("[Services][esxi_off] #{exception.inspect}")
       500
@@ -184,6 +188,9 @@ class Services < Sinatra::Base
       [200,
        {:virtualMachines => get_virtual_machines}.to_json
       ]
+    rescue SSHError => err
+      @logger.error("[Services][vms.json] #{err.inspect}")
+      503
     rescue => exception
       @logger.error("[Services][vms.json] #{exception.inspect}")
       500
@@ -203,6 +210,9 @@ class Services < Sinatra::Base
     rescue VMNotFoundError => err
       @logger.error("[Services][status.json] #{err.inspect}")
       404
+    rescue SSHError => err
+      @logger.error("[Services][status.json] #{err.inspect}")
+      503
     rescue => exception
       @logger.error("[Services][status.json] #{exception.inspect}")
       500

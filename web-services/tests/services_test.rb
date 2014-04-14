@@ -8,6 +8,7 @@ require 'rack/test'
 require 'test/unit'
 require_relative '../rupees/services'
 require_relative '../rupees/model/virtual_machine'
+require_relative '../rupees/model/ssh_error'
 
 
 class ServicesTest < Test::Unit::TestCase
@@ -28,6 +29,14 @@ class ServicesTest < Test::Unit::TestCase
 
     assert_equal(204, last_response.status)
     assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_off_and_esxi_unreachable_should_return_http_503
+    @system_gateway.ssh_error = true
+
+    get '/control/esxi/off'
+
+    assert_equal(503, last_response.status)
   end
 
   def test_esxi_on_should_call_gateway_and_return_http_204
@@ -123,12 +132,28 @@ class ServicesTest < Test::Unit::TestCase
     assert(vm[:guest_os] == 'other26xLinux64Guest', 'guest_os attribute mismatch')
   end
 
+  def test_esxi_vms_and_esxi_unreachable_should_return_http_503
+    @system_gateway.ssh_error = true
+
+    get '/control/esxi/vms.json'
+
+    assert_equal(503, last_response.status)
+  end
+
   def test_esxi_vm_status_return_json_and_http_200
     get '/control/esxi/vm/1/status.json'
 
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_equal('ON', parsed_object[:status])
+  end
+
+  def test_esxi_vm_status_and_esxi_unreachable_return_http_503
+    @system_gateway.ssh_error = true
+
+    get '/control/esxi/vm/1/status.json'
+
+    assert_equal(503, last_response.status)
   end
 
   def test_esxi_vm_status_invalid_vm_return_http_404
@@ -147,17 +172,24 @@ end
 # Used for testing : mocks system calls
 class SystemGatewayMock
 
-  attr_accessor :verify
+  attr_accessor :verify, :ssh_error
 
   def initialize
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
     @verify = false
+    @ssh_error = false
   end
 
   def ssh(host, user_name, command)
     raise 'Undefined host' if host.nil?
     raise 'Undefined user' if user_name.nil?
+
+    # To simulate errors
+    if (@ssh_error)
+      @ssh_error = false
+      raise(SSHError)
+    end
 
     if command == 'poweroff'
       out = ''
