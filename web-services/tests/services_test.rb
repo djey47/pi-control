@@ -18,10 +18,14 @@ class ServicesTest < Test::Unit::TestCase
     Services.new(@system_gateway)
   end
 
+
   def setup
     @system_gateway = SystemGatewayMock.new
     @json_parser_opts = {:symbolize_names => true}
+
     @big_brother_file_name = Services::BIG_BROTHER_LOG_FILE_NAME
+    # Can only be deleted on first time
+    File::delete(@big_brother_file_name) rescue nil
   end
 
   def test_esxi_off_should_call_gateway_and_return_http_204
@@ -47,55 +51,19 @@ class ServicesTest < Test::Unit::TestCase
   end
 
   def test_esxi_on_should_tell_big_brother
-    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
-
-    get '/control/esxi/on'
-
-    assert(File.exists?(@big_brother_file_name))
-
-    big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
-
-    assert(big_brother_new_contents.last.include?(' to turn on.'))
+    assert_big_brother('/control/esxi/on', ' to turn on.')
   end
 
   def test_esxi_off_should_tell_big_brother
-    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
-
-    get '/control/esxi/off'
-
-    assert(File.exists?(@big_brother_file_name))
-
-    big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
-
-    assert(big_brother_new_contents.last.include?(' to turn off.'))
+    assert_big_brother('/control/esxi/off', ' to turn off.')
   end
 
   def test_esxi_vms_should_tell_big_brother
-    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
-
-    get '/control/esxi/vms.json'
-
-    assert(File.exists?(@big_brother_file_name))
-
-    big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
-
-    assert(big_brother_new_contents.last.include?(' has just requested virtual machines list.'))
+    assert_big_brother('/control/esxi/vms.json', ' has just requested virtual machines list.')
   end
 
   def test_esxi_vm_status_should_tell_big_brother
-    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
-
-    get '/control/esxi/vm/1/status.json'
-
-    assert(File.exists?(@big_brother_file_name))
-
-    big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
-
-    assert(big_brother_new_contents.last.include?(' has just requested status of virtual machine #1.'))
+    assert_big_brother('/control/esxi/vm/1/status.json', ' has just requested status of virtual machine #1.')
   end
 
   def test_big_brother_should_return_json_and_http_200
@@ -107,16 +75,7 @@ class ServicesTest < Test::Unit::TestCase
   end
 
   def test_big_brother_should_tell_big_brother
-    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
-
-    get '/big_brother.json'
-
-    assert(File.exists?(@big_brother_file_name))
-
-    big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
-
-    assert(big_brother_new_contents.last.include?(' has just requested big brother contents.'))
+    assert_big_brother('/big_brother.json', ' has just requested big brother contents.')
   end
 
   def test_esxi_vms_should_return_json_list_and_http_200
@@ -167,6 +126,38 @@ class ServicesTest < Test::Unit::TestCase
 
     assert_equal(400, last_response.status)
   end
+
+  def test_esxi_schedule_enable_return_http_204
+    get '/control/esxi/schedule/enable/07:00/02:00'
+
+    assert_equal(204, last_response.status)
+  end
+
+  def test_esxi_schedule_enable_should_tell_big_brother
+    assert_big_brother('/control/esxi/schedule/enable/07:00/02:00', ' has just requested scheduling of')
+  end
+
+  def test_esxi_schedule_wrong_time_return_http_400
+    get '/control/esxi/schedule/enable/aaaa/02:00'
+
+    assert_equal(400, last_response.status)
+  end
+
+
+  #Utilities
+  def assert_big_brother(path, included_expression)
+    big_brother_prev_contents = File.new(@big_brother_file_name).readlines
+
+    get path
+
+    assert(File.exists?(@big_brother_file_name))
+
+    big_brother_new_contents = File.new(@big_brother_file_name).readlines
+    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
+
+    assert(big_brother_new_contents.last.include?(included_expression))
+  end
+
 end
 
 # Used for testing : mocks system calls

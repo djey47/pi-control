@@ -119,11 +119,34 @@ class Services < Sinatra::Base
     vm_status
   end
 
+  def enable_schedule(on_time, off_time)
+    @logger.info('[Services][enable_schedule]')
+
+    host_name = Configuration::get.esxi_host_name
+
+    @big_brother.info("IP #{request.ip} has just requested scheduling of #{host_name}: #{on_time}-#{off_time}.")
+
+    validate_time(on_time)
+    validate_time(off_time)
+  end
+
+
+  #Input validators
   def validate_vm_id(id)
     val = Integer(id) rescue nil
     raise(InvalidArgumentError.new, "Invalid VM identifier: #{id}") if val.nil?
   end
 
+  def validate_time(time)
+    #Format : HH:MM (24 hour format)
+    /(?<hours>\d{1,2}):(?<minutes>\d{1,2})/.match(time) do |match_data|
+      hrs = Integer(match_data['hours'])
+      mins = Integer(match_data['minutes'])
+
+      return if hrs.between?(0, 23) and mins.between?(0, 59)
+    end
+    raise(InvalidArgumentError.new, "Invalid time parameter: #{time}")
+  end
 
 
   #config
@@ -218,4 +241,19 @@ class Services < Sinatra::Base
       500
     end
   end
+
+  #Enables ON/OFF scheduling at given times
+  get '/control/esxi/schedule/enable/:on_time/:off_time' do |on_time, off_time|
+    begin
+      enable_schedule(on_time, off_time)
+      204
+    rescue InvalidArgumentError => err
+      @logger.error("[Services][schedule_enable] #{err.inspect}")
+      400
+    rescue => exception
+      @logger.error("[Services][schedule_enable] #{exception.inspect}")
+      500
+    end
+  end
+
 end
