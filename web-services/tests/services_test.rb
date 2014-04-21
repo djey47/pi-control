@@ -18,7 +18,6 @@ class ServicesTest < Test::Unit::TestCase
     Services.new(@system_gateway)
   end
 
-
   def setup
     @system_gateway = SystemGatewayMock.new
     @json_parser_opts = {:symbolize_names => true}
@@ -127,10 +126,11 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal(400, last_response.status)
   end
 
-  def test_esxi_schedule_enable_return_http_204
+  def test_esxi_schedule_enable_shoud_call_gateway_and_return_http_204
     get '/control/esxi/schedule/enable/07:00/02:00'
 
     assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end
 
   def test_esxi_schedule_enable_should_tell_big_brother
@@ -201,6 +201,15 @@ class SystemGatewayMock
   def wakeonlan(mac_address, broadcast_address)
     raise 'Undefined server MAC address' if mac_address.nil?
     raise 'Undefined LAN broadcast address' if broadcast_address.nil?
+    @verify = true
+  end
+
+  def crontab_add(id, entry)
+    raise 'Wrong task id' if id != Services::CRONTAB_ID_ON and id != Services::CRONTAB_ID_OFF
+    raise 'Undefined cron entry' if entry.nil?
+    raise 'Undefined cron entry hour' if entry[:hour].nil?
+    raise 'Undefined cron entry minute' if entry[:minute].nil?
+    raise 'Undefined cron entry command' if entry[:command] != Services::CRONTAB_CMD_ON and entry[:command] != Services::CRONTAB_CMD_OFF
     @verify = true
   end
 end

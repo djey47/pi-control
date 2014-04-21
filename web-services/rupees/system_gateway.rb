@@ -1,6 +1,7 @@
-# system_gateway.rb - executes linux shell commands and applications
+# system_gateway.rb - executes linux shell commands and applications. Acts as a wrapper, which can be overriden.
 
 require 'logger'
+require 'cronedit'
 require_relative 'model/ssh_error'
 
 class SystemGateway
@@ -31,5 +32,11 @@ class SystemGateway
     @logger.info("[SystemGateway][wakeonlan] Executing #{cmd}...")
     out = `#{cmd}`
     @logger.info("[SystemGateway][wakeonlan] Command ended. Output: #{out}")
+  end
+
+  def crontab_add(id, entry)
+    @logger.info('[SystemGateway][crontab_add]')
+    CronEdit::Crontab.Add(id, entry)
+    @logger.info('[SystemGateway][crontab_add] Command ended.')
   end
 end

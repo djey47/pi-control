@@ -18,6 +18,11 @@ class Services < Sinatra::Base
   VM_POWERED_ON = 'Powered on'
   VM_POWERED_OFF = 'Powered off'
 
+  CRONTAB_ID_ON = 'ESXI_ON'
+  CRONTAB_ID_OFF = 'ESXI_OFF'
+  CRONTAB_CMD_ON = 'curl http://localhost:4600/control/esxi/on'
+  CRONTAB_CMD_OFF = 'curl http://localhost:4600/control/esxi/off'
+
   # To inject different gateways (real and mock)
   def initialize(system_gateway = SystemGateway.new)
     @system_gateway = system_gateway
@@ -126,8 +131,11 @@ class Services < Sinatra::Base
 
     @big_brother.info("IP #{request.ip} has just requested scheduling of #{host_name}: #{on_time}-#{off_time}.")
 
-    validate_time(on_time)
-    validate_time(off_time)
+    on_hour, on_minute = validate_parse_time(on_time)
+    off_hour, off_minute = validate_parse_time(off_time)
+
+    @system_gateway.crontab_add(CRONTAB_ID_ON, {:hour => on_hour, :minute => on_minute, :command => CRONTAB_CMD_ON})
+    @system_gateway.crontab_add(CRONTAB_ID_OFF, {:hour => off_hour, :minute => off_minute, :command => CRONTAB_CMD_OFF})
   end
 
 
@@ -137,13 +145,13 @@ class Services < Sinatra::Base
     raise(InvalidArgumentError.new, "Invalid VM identifier: #{id}") if val.nil?
   end
 
-  def validate_time(time)
+  def validate_parse_time(time)
     #Format : HH:MM (24 hour format)
     /(?<hours>\d{1,2}):(?<minutes>\d{1,2})/.match(time) do |match_data|
       hrs = Integer(match_data['hours'])
       mins = Integer(match_data['minutes'])
 
-      return if hrs.between?(0, 23) and mins.between?(0, 59)
+      return hrs, mins if hrs.between?(0, 23) and mins.between?(0, 59)
     end
     raise(InvalidArgumentError.new, "Invalid time parameter: #{time}")
   end
