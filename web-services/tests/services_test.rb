@@ -263,8 +263,8 @@ class SystemGatewayMock
     end
 
     {
-        "#{Services::CRONTAB_ID_ON}" => '0\t7\t*\t*\t*\tcurl http://foo/on',
-        "#{Services::CRONTAB_ID_OFF}" => '0\t2\t*\t*\t*\tcurl http://foo/off'
+        "#{Services::CRONTAB_ID_ON}" => "0\t7\t*\t*\t*\tcurl http://foo/on",
+        "#{Services::CRONTAB_ID_OFF}" => "0\t2\t*\t*\t*\tcurl http://foo/off"
     }
   end
 

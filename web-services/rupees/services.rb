@@ -163,8 +163,7 @@ class Services < Sinatra::Base
   end
 
   def parse_cron_entry(entry)
-    #Warning: single quote as no special character here
-    items = entry.split('\t')
+    items = entry.split("\t")
 
     hours = items[1].rjust(2, '0')
     minutes = items[0].rjust(2, '0')
