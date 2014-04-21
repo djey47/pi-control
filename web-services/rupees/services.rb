@@ -302,7 +302,7 @@ class Services < Sinatra::Base
       disable_schedule
       204
     rescue => exception
-      @logger.error("[Services][schedule_enable] #{exception.inspect}")
+      @logger.error("[Services][schedule_disable] #{exception.inspect}")
       500
     end
   end

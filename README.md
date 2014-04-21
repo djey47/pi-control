@@ -68,4 +68,4 @@ API details:
 - **400** : KO, invalid argument specified
 - **404** : KO, asked item not found
 - **500** : KO, generic system error
-- **503** : KO, could not reach ESXI host preperly.
+- **503** : KO, could not reach ESXI host properly.
