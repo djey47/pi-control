@@ -127,15 +127,21 @@ class Services < Sinatra::Base
   def enable_schedule(on_time, off_time)
     @logger.info('[Services][enable_schedule]')
 
-    host_name = Configuration::get.esxi_host_name
-
-    @big_brother.info("IP #{request.ip} has just requested scheduling of #{host_name}: #{on_time}-#{off_time}.")
+    @big_brother.info("IP #{request.ip} has just requested scheduling of #{Configuration::get.esxi_host_name}: #{on_time}-#{off_time}.")
 
     on_hour, on_minute = validate_parse_time(on_time)
     off_hour, off_minute = validate_parse_time(off_time)
 
     @system_gateway.crontab_add(CRONTAB_ID_ON, {:hour => on_hour, :minute => on_minute, :command => CRONTAB_CMD_ON})
     @system_gateway.crontab_add(CRONTAB_ID_OFF, {:hour => off_hour, :minute => off_minute, :command => CRONTAB_CMD_OFF})
+  end
+
+  def disable_schedule
+    @logger.info('[Services][disable_schedule]')
+
+    @big_brother.info("IP #{request.ip} has just requested to stop scheduling of #{Configuration::get.esxi_host_name}.")
+
+    @system_gateway.crontab_remove(CRONTAB_ID_ON, CRONTAB_ID_OFF)
   end
 
 
@@ -258,6 +264,17 @@ class Services < Sinatra::Base
     rescue InvalidArgumentError => err
       @logger.error("[Services][schedule_enable] #{err.inspect}")
       400
+    rescue => exception
+      @logger.error("[Services][schedule_enable] #{exception.inspect}")
+      500
+    end
+  end
+
+  #Disables ON/OFF scheduling
+  get '/control/esxi/schedule/disable' do
+    begin
+      disable_schedule
+      204
     rescue => exception
       @logger.error("[Services][schedule_enable] #{exception.inspect}")
       500

@@ -35,8 +35,14 @@ class SystemGateway
   end
 
   def crontab_add(id, entry)
-    @logger.info('[SystemGateway][crontab_add]')
+    @logger.info("[SystemGateway][crontab_add] Calling CronEdit::Crontab.Add(#{id}, #{entry})...")
     CronEdit::Crontab.Add(id, entry)
-    @logger.info('[SystemGateway][crontab_add] Command ended.')
+    @logger.info('[SystemGateway][crontab_add] Call ended.')
+  end
+
+  def crontab_remove(*ids)
+    @logger.info("[SystemGateway][crontab_remove] Calling CronEdit::Crontab.Remove(#{ids})...")
+    CronEdit::Crontab.Remove(ids)
+    @logger.info('[SystemGateway][crontab_remove] Call ended.')
   end
 end

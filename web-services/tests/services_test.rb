@@ -143,6 +143,17 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal(400, last_response.status)
   end
 
+  def test_esxi_schedule_disable_shoud_call_gateway_and_return_http_204
+    get '/control/esxi/schedule/disable'
+
+    assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_schedule_disable_should_tell_big_brother
+    assert_big_brother('/control/esxi/schedule/disable', ' has just requested to stop scheduling of')
+  end
+
 
   #Utilities
   def assert_big_brother(path, included_expression)
@@ -177,7 +188,7 @@ class SystemGatewayMock
     raise 'Undefined user' if user_name.nil?
 
     # To simulate errors
-    if (@ssh_error)
+    if @ssh_error
       @ssh_error = false
       raise(SSHError)
     end
@@ -210,6 +221,11 @@ class SystemGatewayMock
     raise 'Undefined cron entry hour' if entry[:hour].nil?
     raise 'Undefined cron entry minute' if entry[:minute].nil?
     raise 'Undefined cron entry command' if entry[:command] != Services::CRONTAB_CMD_ON and entry[:command] != Services::CRONTAB_CMD_OFF
+    @verify = true
+  end
+
+  def crontab_remove(*ids)
+    raise 'Wrong task id list' if ids.nil? or ids.empty?
     @verify = true
   end
 end
