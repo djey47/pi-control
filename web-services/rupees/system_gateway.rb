@@ -34,22 +34,25 @@ class SystemGateway
     @logger.info("[SystemGateway][wakeonlan] Command ended. Output: #{out}")
   end
 
+  # Adds entry to crontab
   def crontab_add(id, entry)
     @logger.info("[SystemGateway][crontab_add] Calling CronEdit::Crontab.Add(#{id}, #{entry})...")
     CronEdit::Crontab.Add(id, entry)
     @logger.info('[SystemGateway][crontab_add] Call ended.')
   end
 
+  # Removes entry from crontab
   def crontab_remove(*ids)
     @logger.info("[SystemGateway][crontab_remove] Calling CronEdit::Crontab.Remove(#{ids})...")
     CronEdit::Crontab.Remove(ids)
     @logger.info('[SystemGateway][crontab_remove] Call ended.')
   end
 
+  # Returns current crontab entries
   def crontab_list
     @logger.info('[SystemGateway][crontab_list] Calling CronEdit::Crontab.List...')
     list = CronEdit::Crontab.List
-    @logger.info('[SystemGateway][crontab_remove] Call ended.')
+    @logger.info("[SystemGateway][crontab_list] Call ended. Output: #{list}")
     list
   end
 end
