@@ -6,6 +6,7 @@ require 'sinatra/base'
 require_relative 'system_gateway'
 require_relative 'common/configuration'
 require_relative 'model/virtual_machine'
+require_relative 'model/schedule_status'
 require_relative 'model/v_m_not_found_error'
 require_relative 'model/invalid_argument_error'
 require_relative 'model/ssh_error'
@@ -142,6 +143,32 @@ class Services < Sinatra::Base
     @big_brother.info("IP #{request.ip} has just requested to stop scheduling of #{Configuration::get.esxi_host_name}.")
 
     @system_gateway.crontab_remove(CRONTAB_ID_ON, CRONTAB_ID_OFF)
+  end
+
+  def get_schedule_status
+    @logger.info('[Services][schedule_status.json]')
+
+    @big_brother.info("IP #{request.ip} has just requested scheduling status of #{Configuration::get.esxi_host_name}.")
+
+    entries = @system_gateway.crontab_list
+
+    on_entry  = entries[CRONTAB_ID_ON]
+    off_entry  = entries[CRONTAB_ID_OFF]
+
+    return ScheduleStatus.new(nil, nil) if on_entry.nil? or off_entry.nil?
+
+    on_time = parse_cron_entry(on_entry)
+    off_time = parse_cron_entry(off_entry)
+    ScheduleStatus.new(on_time, off_time)
+  end
+
+  def parse_cron_entry(entry)
+    #Warning: single quote as no special character here
+    items = entry.split('\t')
+
+    hours = items[1].rjust(2, '0')
+    minutes = items[0].rjust(2, '0')
+    "#{hours}:#{minutes}"
   end
 
 
@@ -281,4 +308,16 @@ class Services < Sinatra::Base
     end
   end
 
+  #Returns json with status of ON/OFF scheduling
+  get '/control/esxi/schedule/status.json' do
+    begin
+      content_type :json
+      [200,
+       {:status => get_schedule_status}.to_json
+      ]
+    rescue => exception
+      @logger.error("[Services][schedule_status.json] #{exception.inspect}")
+      500
+    end
+  end
 end

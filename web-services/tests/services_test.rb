@@ -8,6 +8,7 @@ require 'rack/test'
 require 'test/unit'
 require_relative '../rupees/services'
 require_relative '../rupees/model/virtual_machine'
+require_relative '../rupees/model/schedule_status'
 require_relative '../rupees/model/ssh_error'
 
 
@@ -154,6 +155,29 @@ class ServicesTest < Test::Unit::TestCase
     assert_big_brother('/control/esxi/schedule/disable', ' has just requested to stop scheduling of')
   end
 
+  def test_esxi_schedule_status_should_return_json_and_http_200
+    get '/control/esxi/schedule/status.json'
+
+    assert_equal(200, last_response.status)
+    parsed_object = JSON.parse(last_response.body, @json_parser_opts)
+    assert_equal('07:00', parsed_object[:status][:on_at])
+    assert_equal('02:00', parsed_object[:status][:off_at])
+  end
+
+  def test_esxi_schedule_status_and_disabled_should_return_json_and_http_200
+    @system_gateway.scheduling_stopped = true
+
+    get '/control/esxi/schedule/status.json'
+
+    assert_equal(200, last_response.status)
+    parsed_object = JSON.parse(last_response.body, @json_parser_opts)
+    assert_equal(ScheduleStatus::DISABLED, parsed_object[:status])
+  end
+
+  def test_esxi_schedule_status_should_tell_big_brother
+    assert_big_brother('/control/esxi/schedule/status.json', ' has just requested scheduling status of')
+  end
+
 
   #Utilities
   def assert_big_brother(path, included_expression)
@@ -174,13 +198,14 @@ end
 # Used for testing : mocks system calls
 class SystemGatewayMock
 
-  attr_accessor :verify, :ssh_error
+  attr_accessor :verify, :ssh_error, :scheduling_stopped
 
   def initialize
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
     @verify = false
     @ssh_error = false
+    @scheduling_stopped = false
   end
 
   def ssh(host, user_name, command)
@@ -228,4 +253,19 @@ class SystemGatewayMock
     raise 'Wrong task id list' if ids.nil? or ids.empty?
     @verify = true
   end
+
+  def crontab_list
+    @verify = true
+    #To simulate disabled schedule
+    if @scheduling_stopped
+      @scheduling_stopped = false
+      return {}
+    end
+
+    {
+        "#{Services::CRONTAB_ID_ON}" => '0\t7\t*\t*\t*\tcurl http://foo/on',
+        "#{Services::CRONTAB_ID_OFF}" => '0\t2\t*\t*\t*\tcurl http://foo/off'
+    }
+  end
+
 end

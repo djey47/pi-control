@@ -45,4 +45,11 @@ class SystemGateway
     CronEdit::Crontab.Remove(ids)
     @logger.info('[SystemGateway][crontab_remove] Call ended.')
   end
+
+  def crontab_list
+    @logger.info('[SystemGateway][crontab_list] Calling CronEdit::Crontab.List...')
+    list = CronEdit::Crontab.List
+    @logger.info('[SystemGateway][crontab_remove] Call ended.')
+    list
+  end
 end
