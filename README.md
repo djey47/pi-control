@@ -9,6 +9,7 @@ Ruby dependencies:
 (dev on core 2.0.0-p247)
 
 ### Runtime gems:
+- cronedit v0.3.0
 - sinatra v1.4.4
   - rack v1.5.2
   - tilt v1.4.1
@@ -51,6 +52,9 @@ Enabled services:
 - **/big_brother.json** : returns contents of *big_brother.log* file
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
+- **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time (uses crontab)
+- **/control/esxi/schedule/disable** : suspends scheduled on/off events
+- **/control/esxi/schedule/status** : returns current schedule if set, or disabled
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
 - **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine
 
