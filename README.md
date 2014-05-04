@@ -48,12 +48,13 @@ Enabled services:
 - Target server IP must be in *known_hosts* files on source ! Otherwise esxi/off command will fail. To do this, use *ssh* to once connect target server manually.
 
 ### Service URLs:
+Server port is not configurable atm. Set to **4600**.
 - **/** : just as a proof that server is alive :)
 - **/big_brother.json** : returns contents of *big_brother.log* file
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
-- **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time (uses crontab)
-- **/control/esxi/schedule/disable** : erases scheduled on/off events - *does not work for now*
+- **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time. Uses crontab.
+- **/control/esxi/schedule/disable** : erases scheduled on/off events - *bugged : does not work for now*
 - **/control/esxi/schedule/status** : returns current schedule if set, or disabled
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
 - **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine
