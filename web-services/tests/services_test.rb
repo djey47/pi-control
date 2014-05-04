@@ -134,6 +134,12 @@ class ServicesTest < Test::Unit::TestCase
     assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end
 
+  def test_esxi_schedule_enable_hour_base_10_shoud_return_http_204
+    get '/control/esxi/schedule/enable/08:08/09:09'
+
+    assert_equal(204, last_response.status)
+  end
+
   def test_esxi_schedule_enable_should_tell_big_brother
     assert_big_brother('/control/esxi/schedule/enable/07:00/02:00', ' has just requested scheduling of')
   end

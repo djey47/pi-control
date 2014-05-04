@@ -173,6 +173,7 @@ class Services < Sinatra::Base
   end
 
 
+private
   #Input validators
   def validate_vm_id(id)
     val = Integer(id) rescue nil
@@ -182,15 +183,15 @@ class Services < Sinatra::Base
   def validate_parse_time(time)
     #Format : HH:MM (24 hour format)
     /(?<hours>\d{1,2}):(?<minutes>\d{1,2})/.match(time) do |match_data|
-      hrs = Integer(match_data['hours'])
-      mins = Integer(match_data['minutes'])
+      hrs = Integer(match_data['hours'],10)
+      mins = Integer(match_data['minutes'],10)
 
       return hrs, mins if hrs.between?(0, 23) and mins.between?(0, 59)
     end
     raise(InvalidArgumentError.new, "Invalid time parameter: #{time}")
   end
 
-
+public
   #config
   set :port, SERVER_PORT
   if Configuration::get.app_is_production
