@@ -14,6 +14,8 @@ require_relative 'model/ssh_error'
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
 
+  SERVER_PORT = 4600
+
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
 
   VM_POWERED_ON = 'Powered on'
@@ -21,8 +23,8 @@ class Services < Sinatra::Base
 
   CRONTAB_ID_ON = 'ESXI_ON'
   CRONTAB_ID_OFF = 'ESXI_OFF'
-  CRONTAB_CMD_ON = 'curl http://localhost:4600/control/esxi/on'
-  CRONTAB_CMD_OFF = 'curl http://localhost:4600/control/esxi/off'
+  CRONTAB_CMD_ON = "curl http://localhost:#{SERVER_PORT}/control/esxi/on"
+  CRONTAB_CMD_OFF = "curl http://localhost:#{SERVER_PORT}/control/esxi/off"
 
   # To inject different gateways (real and mock)
   def initialize(system_gateway = SystemGateway.new)
@@ -190,7 +192,7 @@ class Services < Sinatra::Base
 
 
   #config
-  set :port, 4600
+  set :port, SERVER_PORT
   if Configuration::get.app_is_production
     set :environment, :production
     set :show_exceptions, false
