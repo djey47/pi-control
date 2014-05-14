@@ -84,11 +84,15 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_kind_of(Array, parsed_object[:virtualMachines])
-    assert_equal(4, parsed_object[:virtualMachines].size, 'array size mismatch')
+    assert_equal(2, parsed_object[:virtualMachines].size, 'array size mismatch')
     vm = parsed_object[:virtualMachines][0]
-    assert(vm[:id] == '13', 'id attribute mismatch')
-    assert(vm[:name] == 'xpenology-3810-esxi-1.1', 'name attribute mismatch')
-    assert(vm[:guest_os] == 'other26xLinux64Guest', 'guest_os attribute mismatch')
+    assert_equal('01', vm[:id], 'id attribute mismatch')
+    assert_equal('xpenology-3810-esxi-1.1', vm[:name], 'name attribute mismatch')
+    assert_equal('other26xLinux64Guest', vm[:guest_os], 'guest_os attribute mismatch')
+    vm2 = parsed_object[:virtualMachines][1]
+    assert_equal('02', vm2[:id], 'id attribute mismatch')
+    assert_equal('xpenology-4458-gnoboot', vm2[:name], 'name attribute mismatch')
+    assert_equal('other26xLinux64Guest', vm2[:guest_os], 'guest_os attribute mismatch')
   end
 
   def test_esxi_vms_and_esxi_unreachable_should_return_http_503
@@ -224,20 +228,22 @@ class SystemGatewayMock
       raise(SSHError)
     end
 
-    if command == 'poweroff'
-      out = ''
-    elsif command == 'vim-cmd vmsvc/getallvms'
-      # Important : use double quotes here to taken new lines into account !!
-      out = "Vmid               Name                                              File                                        Guest OS         Version   Annotation\n13     xpenology-3810-esxi-1.1        [Transverse] xpenology-3810-esxi/xpenology-3810-esxi.vmx             other26xLinux64Guest   vmx-09              \n14     xpenology-3810-esxi-1.1-test   [Transverse] xpenology-3810-esxi-test/xpenology-3810-esxi-test.vmx   other26xLinux64Guest   vmx-09              \n15     xpenology-dsm5b-test           [Transverse] xpenology-dsm5-test/xpenology-dsm5-test.vmx             other26xLinux64Guest   vmx-09              \n4      xubuntu-neo                    [Transverse] xubuntu-neo/xubuntu-neo.vmx                             ubuntu64Guest          vmx-08              \n"
-    elsif command == 'vim-cmd vmsvc/power.getstate 1'
-      out = "Retrieved runtime info\nPowered on\n"
-    elsif command == 'vim-cmd vmsvc/power.getstate 0'
-      out = ''
-    else
-      raise "Unexpected command: #{command}"
+    case command
+      when 'poweroff'
+        out = ''
+      when 'vim-cmd vmsvc/getallvms'
+        # Important : use double quotes here to take new lines into account !!
+        out = "Vmid            Name                                          File                                      Guest OS          Version   Annotation\n01     xpenology-3810-esxi-1.1   [XXXXXXXXXX] ???????????????????????????????????????.vmx       other26xLinux64Guest    vmx-09              \n02     xpenology-4458-gnoboot    [XXXXXXXXXX] ?????????????????????????????????????????????.vmx   other26xLinux64Guest    vmx-09              \n"
+      when 'vim-cmd vmsvc/power.getstate 1'
+        out = "Retrieved runtime info\nPowered on\n"
+      when 'vim-cmd vmsvc/power.getstate 0'
+        out = ''
+      else
+        raise "Unexpected command: #{command}"
     end
+
     @verify = true
-  out
+    out
   end
 
   def wakeonlan(mac_address, broadcast_address)

@@ -80,16 +80,20 @@ class Services < Sinatra::Base
     # Note : use double quotes with symbols
     out.split("\n").each_with_index do |line, index|
       # First line is ignored (header)
-      if index != 0
-        id = line[0..6].strip
-        name = line[7..37].strip
-        guest_os = line[107..129].strip
+      unless index == 0
+        valid_items = []
+        line.split('   ').each do |item|
+          valid_items << item.strip unless item.strip.empty?
+        end
+        if valid_items.length >= 4
+          id = valid_items[0].strip
+          name = valid_items[1].strip
+          guest_os = valid_items[3].strip
 
-        @logger.debug("id=#{id}, name=#{name}, guest_os=#{guest_os}")
-
-        vms << VirtualMachine.new(id, name, guest_os)
+          @logger.debug("id=#{id}, name=#{name}, guest_os=#{guest_os}")
+          vms << VirtualMachine.new(id, name, guest_os)
+        end
       end
-
     end
     vms
   end
