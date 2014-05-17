@@ -1,0 +1,3 @@
+#! /bin/sh
+echo Starting pi-control web services...
+ruby ./web-services/rupees/pi_control.rb
