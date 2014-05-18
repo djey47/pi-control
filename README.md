@@ -32,9 +32,11 @@ Watch and update *./web-services/conf/pi-control.yml*:
 
 How to use:
 -----------
-**Important : set current directory to app root or it won't be able to read config file**
+**Important : set current directory to app root else it won't be able to read config file**
 
-- To start pi-control : **ruby ./web-services/rupees/pi_control.rb**
+- To execute tests : use provided script: **./scripts/test.sh**
+
+- To start web-services : use provided script : **./scripts/start.sh**
 
 - To stop it : kill it !
 
