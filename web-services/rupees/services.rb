@@ -217,6 +217,10 @@ class Services < Sinatra::Base
 
 private
   #Utilities
+  def check_origin
+    response['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+  end
+
   def parse_cron_entry(entry)
     items = entry.split("\t")
 
@@ -288,6 +292,7 @@ public
   #Returns json with all big brother messages
   get '/big_brother.json' do
     begin
+      check_origin
       content_type :json
       [200,
        {:events => get_big_brother}.to_json
@@ -301,6 +306,7 @@ public
   #Returns json with all available virtual machines
   get '/control/esxi/vms.json' do
     begin
+      check_origin
       content_type :json
       [200,
        {:virtualMachines => get_virtual_machines}.to_json
@@ -317,6 +323,7 @@ public
   #Returns json with status of specified virtual machine
   get '/control/esxi/vm/:id/status.json' do |id|
     begin
+      check_origin
       content_type :json
       [200,
        {:status => get_virtual_machine_status(id)}.to_json
@@ -364,6 +371,7 @@ public
   #Returns json with status of ON/OFF scheduling
   get '/control/esxi/schedule/status.json' do
     begin
+      check_origin
       content_type :json
       [200,
        {:status => get_schedule_status}.to_json
@@ -377,6 +385,7 @@ public
   #Returns json with list of hard disks
   get '/control/esxi/disks.json' do
     begin
+      check_origin
       content_type :json
       [200,
        {:disks => get_disks}.to_json
