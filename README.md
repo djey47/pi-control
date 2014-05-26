@@ -60,6 +60,7 @@ Server port is not configurable atm. Set to **4600**.
 - **/control/esxi/schedule/status** : returns current schedule if set, or disabled
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
 - **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine
+- **/control/esxi/disks.json** : returns list of hard disks plugged to hypervisor with a few details
 
 
 API details:
