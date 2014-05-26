@@ -5,6 +5,7 @@ require 'logger'
 require 'sinatra/base'
 require_relative 'system_gateway'
 require_relative 'common/configuration'
+require_relative 'model/disk'
 require_relative 'model/virtual_machine'
 require_relative 'model/schedule_status'
 require_relative 'model/v_m_not_found_error'
@@ -168,6 +169,54 @@ class Services < Sinatra::Base
     ScheduleStatus.new(on_time, off_time)
   end
 
+  def get_disks
+    @logger.info('[Services][disks.json]')
+
+    @big_brother.info("IP #{request.ip} has just requested disk list.")
+
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+
+    out = @system_gateway.ssh(host_name, user, 'esxcli storage core device list')
+
+    #Gathering all drives
+    drives = []
+    out.split("\n\n").each do |drive|
+      drive_infos = {}
+      drive.split("\n").each_with_index do |item, index|
+        #First item is disk id
+        if index == 0
+          drive_infos.merge!( 'Id' => item )
+        else
+          key = item.split(':')[0].strip
+          value = item.split(':')[1].strip
+          drive_infos.merge!( key => value )
+        end
+      end
+      drives << drive_infos
+    end
+
+    #Filtering to keep only hard disks
+    disks = []
+    drives.each do |drive|
+      unless drive['Is Boot USB Device'] == 'true'
+        size_megabytes = drive['Size']
+        size_gigabytes = (size_megabytes.to_i / 1024).round(4)
+
+        disks << Disk.new(
+            drive['Id'],
+            drive['Model'],
+            size_gigabytes,
+            drive['Devfs Path']
+            #TODO Temp and status
+        )
+      end
+    end
+    disks
+  end
+
+private
+  #Utilities
   def parse_cron_entry(entry)
     items = entry.split("\t")
 
@@ -176,8 +225,6 @@ class Services < Sinatra::Base
     "#{hours}:#{minutes}"
   end
 
-
-private
   #Input validators
   def validate_vm_id(id)
     val = Integer(id) rescue nil
@@ -323,6 +370,22 @@ public
       ]
     rescue => exception
       @logger.error("[Services][schedule_status.json] #{exception.inspect}")
+      500
+    end
+  end
+
+  #Returns json with list of hard disks
+  get '/control/esxi/disks.json' do
+    begin
+      content_type :json
+      [200,
+       {:disks => get_disks}.to_json
+      ]
+    rescue SSHError => err
+      @logger.error("[Services][disks.json] #{err.inspect}")
+      503
+    rescue => exception
+      @logger.error("[Services][disks.json] #{exception.inspect}")
       500
     end
   end

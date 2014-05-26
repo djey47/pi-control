@@ -13,6 +13,10 @@ class VirtualMachine
   end
 
   def to_json(*a)
-    { :id => @id, :name => @name, :guest_os => @guest_os }.to_json(*a)
+    {
+        :id => @id,
+        :name => @name,
+        :guest_os => @guest_os
+    }.to_json(*a)
   end
 end
