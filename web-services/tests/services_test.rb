@@ -28,6 +28,20 @@ class ServicesTest < Test::Unit::TestCase
     File::delete(@big_brother_file_name) rescue nil
   end
 
+  def test_json_service_should_set_response_headers_when_origin_request_header_set
+    get '/big_brother.json', '', Services::HDR_ORIGIN => 'http://origin'
+
+    assert_equal('application/json;charset=utf-8', last_response.headers['Content-Type'])
+    assert_equal('http://origin', last_response.headers[Services::HDR_A_C_ALLOW_ORIGIN])
+  end
+
+  def test_json_service_should_set_response_headers_when_origin_request_header_not_set
+    get '/big_brother.json'
+
+    assert_equal('application/json;charset=utf-8', last_response.headers['Content-Type'])
+    assert_false(last_response.headers.has_key? Services::HDR_A_C_ALLOW_ORIGIN)
+  end
+
   def test_esxi_off_should_call_gateway_and_return_http_204
     get '/control/esxi/off'
 
@@ -201,7 +215,6 @@ class ServicesTest < Test::Unit::TestCase
     assert_big_brother('/control/esxi/disks.json', ' has just requested disk list.')
   end
 
-
   #Utilities
   def assert_big_brother(path, included_expression)
     big_brother_prev_contents = File.new(@big_brother_file_name).readlines
@@ -294,5 +307,4 @@ class SystemGatewayMock
         "#{Services::CRONTAB_ID_OFF}" => "0\t2\t*\t*\t*\tcurl http://foo/off"
     }
   end
-
 end

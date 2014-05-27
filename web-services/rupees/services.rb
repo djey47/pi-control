@@ -15,17 +15,23 @@ require_relative 'model/ssh_error'
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
 
+  #Default parameters
   SERVER_PORT = 4600
-
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
 
+  #Machine states
   VM_POWERED_ON = 'Powered on'
   VM_POWERED_OFF = 'Powered off'
 
+  #CRONTAB placeholders and commands
   CRONTAB_ID_ON = 'ESXI_ON'
   CRONTAB_ID_OFF = 'ESXI_OFF'
   CRONTAB_CMD_ON = "curl http://localhost:#{SERVER_PORT}/control/esxi/on"
   CRONTAB_CMD_OFF = "curl http://localhost:#{SERVER_PORT}/control/esxi/off"
+
+  #HTTP headers
+  HDR_A_C_ALLOW_ORIGIN = 'Access-Control-Allow-Origin'
+  HDR_ORIGIN = 'HTTP_ORIGIN'
 
   # To inject different gateways (real and mock)
   def initialize(system_gateway = SystemGateway.new)
@@ -217,8 +223,11 @@ class Services < Sinatra::Base
 
 private
   #Utilities
-  def check_origin
-    response['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+
+  #XHR requests provide HTTP_ORIGIN header; for responses to be accepted, Access-Control-Allow-Origin header must be present in response
+  def handle_headers_for_json
+    response[HDR_A_C_ALLOW_ORIGIN] = request.env[HDR_ORIGIN] if request.env.has_key? HDR_ORIGIN
+    content_type :json
   end
 
   def parse_cron_entry(entry)
@@ -292,8 +301,7 @@ public
   #Returns json with all big brother messages
   get '/big_brother.json' do
     begin
-      check_origin
-      content_type :json
+      handle_headers_for_json
       [200,
        {:events => get_big_brother}.to_json
       ]
@@ -306,8 +314,7 @@ public
   #Returns json with all available virtual machines
   get '/control/esxi/vms.json' do
     begin
-      check_origin
-      content_type :json
+      handle_headers_for_json
       [200,
        {:virtualMachines => get_virtual_machines}.to_json
       ]
@@ -323,8 +330,7 @@ public
   #Returns json with status of specified virtual machine
   get '/control/esxi/vm/:id/status.json' do |id|
     begin
-      check_origin
-      content_type :json
+      handle_headers_for_json
       [200,
        {:status => get_virtual_machine_status(id)}.to_json
       ]
@@ -371,8 +377,7 @@ public
   #Returns json with status of ON/OFF scheduling
   get '/control/esxi/schedule/status.json' do
     begin
-      check_origin
-      content_type :json
+      handle_headers_for_json
       [200,
        {:status => get_schedule_status}.to_json
       ]
@@ -385,8 +390,7 @@ public
   #Returns json with list of hard disks
   get '/control/esxi/disks.json' do
     begin
-      check_origin
-      content_type :json
+      handle_headers_for_json
       [200,
        {:disks => get_disks}.to_json
       ]
