@@ -16,12 +16,16 @@ Ruby dependencies:
   - rack-protection v1.5.0
 
 ### Testing gems:
+- rack-test v0.6.2
 - test-unit v2.5.5
+
+### Utility gems
+- bundler v1.6.2
 
 
 Configuration:
 --------------
-Watch and update *./web-services/conf/pi-control.yml*:
+Please watch and update *./web-services/conf/pi-control.yml* accordingly:
 
 - Set app/is-production flag to false when developing, true when running on a server (allowing access from other machines).
 
