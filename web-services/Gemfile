@@ -1,0 +1,5 @@
+source :rubygems
+
+gem 'cronedit', '0.3.0'
+gem 'sinatra', '1.4.4'
+gem 'test-unit', '2.5.5'
