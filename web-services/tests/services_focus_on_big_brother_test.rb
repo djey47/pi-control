@@ -69,6 +69,10 @@ class ServicesFocusOnBigBrotherTest < Test::Unit::TestCase
     assert_big_brother('/control/esxi/disks.json', ' has just requested disk list.')
   end
 
+  def test_esxi_status_should_tell_big_brother
+    assert_big_brother('/control/esxi/status.json', ' has just requested status of ')
+  end
+
   #Utilities
   def assert_big_brother(path, included_expression)
     big_brother_prev_contents = File.new(@big_brother_file_name).readlines

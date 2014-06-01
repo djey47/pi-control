@@ -57,6 +57,7 @@ Enabled services:
 Server port is not configurable atm. Set to **4600**.
 - **/** : just as a proof that server is alive :)
 - **/big_brother.json** : returns contents of *big_brother.log* file
+- **/control/esxi/status.json** : returns status (UP/UP, RUNNING/DOWN) of hypervisor (uses ping and ssh)
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
 - **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time. Uses crontab.

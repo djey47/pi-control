@@ -55,4 +55,13 @@ class SystemGateway
     @logger.info("[SystemGateway][crontab_list] Call ended. Output: #{list}")
     list
   end
+
+  # Pings specified host and returns true if OK, false if error
+  def ping(host, icmp_count = 1)
+    cmd = "ping -c #{icmp_count} #{host}"
+    @logger.info("[SystemGateway][ping] Executing #{cmd}...")
+    out = `#{cmd}`
+    @logger.info("[SystemGateway][ping] Command ended. Output: #{out}")
+    $? == 0
+  end
 end

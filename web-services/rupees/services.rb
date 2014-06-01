@@ -18,6 +18,7 @@ class Services < Sinatra::Base
   #Default parameters
   SERVER_PORT = 4600
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
+  SHELL_CMD = 'uname'
 
   #Machine states
   VM_POWERED_ON = 'Powered on'
@@ -106,7 +107,7 @@ class Services < Sinatra::Base
   end
 
   def get_virtual_machine_status(id)
-    @logger.info('[Services][status.json]')
+    @logger.info('[Services][vm_status.json]')
 
     @big_brother.info("IP #{request.ip} has just requested status of virtual machine ##{id}.")
 
@@ -219,6 +220,41 @@ class Services < Sinatra::Base
       end
     end
     disks
+  end
+
+  def get_esxi_status
+    # If responds to ping => UP, if basic SSH command completes => UP, RUNNING
+    # Else DOWN
+    @logger.info('[Services][esxi_status.json]')
+
+    @big_brother.info("IP #{request.ip} has just requested status of #{Configuration::get.esxi_host_name}.")
+
+    host_name = Configuration::get.esxi_host_name
+
+    responds_to_ping = @system_gateway.ping(host_name, 4)
+
+    if responds_to_ping
+      @logger.info("[Services][esxi_status.json] Host #{host_name} responds to ping.")
+
+      user = Configuration::get.esxi_user
+
+      begin
+        @system_gateway.ssh(host_name, user, SHELL_CMD)
+
+        @logger.info("[Services][esxi_status.json] Host #{host_name} responds to SSH.")
+
+        'UP, RUNNING'
+      rescue SSHError
+        @logger.info("[Services][esxi_status.json] Host #{host_name} does not respond to SSH.")
+
+        'UP'
+      end
+
+    else
+      @logger.info("[Services][esxi_status.json] Host #{host_name} does not even respond to ping.")
+
+      'DOWN'
+    end
   end
 
 private
@@ -335,16 +371,16 @@ public
        {:status => get_virtual_machine_status(id)}.to_json
       ]
     rescue InvalidArgumentError => err
-      @logger.error("[Services][status.json] #{err.inspect}")
+      @logger.error("[Services][vm_status.json] #{err.inspect}")
       400
     rescue VMNotFoundError => err
-      @logger.error("[Services][status.json] #{err.inspect}")
+      @logger.error("[Services][vm_status.json] #{err.inspect}")
       404
     rescue SSHError => err
-      @logger.error("[Services][status.json] #{err.inspect}")
+      @logger.error("[Services][vm_status.json] #{err.inspect}")
       503
     rescue => exception
-      @logger.error("[Services][status.json] #{exception.inspect}")
+      @logger.error("[Services][vm_status.json] #{exception.inspect}")
       500
     end
   end
@@ -402,4 +438,21 @@ public
       500
     end
   end
+
+  #Returns json with status of ESXI hypervisor
+  get '/control/esxi/status.json' do
+    begin
+      handle_headers_for_json
+      [200,
+       {:status => get_esxi_status}.to_json
+      ]
+  #   rescue SSHError => err
+  #     @logger.error("[Services][disks.json] #{err.inspect}")
+  #     503
+    rescue => exception
+      @logger.error("[Services][esxi_status.json] #{exception.inspect}")
+      500
+    end
+  end
+
 end

@@ -66,6 +66,7 @@ class ServicesTest < Test::Unit::TestCase
   def test_esxi_vms_should_return_json_list_and_http_200
     get '/control/esxi/vms.json'
 
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_kind_of(Array, parsed_object[:virtualMachines])
@@ -94,6 +95,7 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_equal('ON', parsed_object[:status])
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end
 
   def test_esxi_vm_status_and_esxi_unreachable_return_http_503
@@ -149,6 +151,7 @@ class ServicesTest < Test::Unit::TestCase
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_equal('07:00', parsed_object[:status][:on_at])
     assert_equal('02:00', parsed_object[:status][:off_at])
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end
 
   def test_esxi_schedule_status_and_disabled_should_return_json_and_http_200
@@ -168,5 +171,37 @@ class ServicesTest < Test::Unit::TestCase
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert(parsed_object[:disks].is_a? Array)
     #TODO : Assert contents
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_status_when_ping_ok_should_return_json_and_http_200
+    @system_gateway.ssh_error = true
+
+    get '/control/esxi/status.json'
+
+    assert_equal(200, last_response.status)
+    parsed_object = JSON.parse(last_response.body, @json_parser_opts)
+    assert_equal('UP', parsed_object[:status])
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_status_when_running_should_return_json_and_http_200
+    @system_gateway.ssh_error = false
+
+    get '/control/esxi/status.json'
+
+    assert_equal(200, last_response.status)
+    parsed_object = JSON.parse(last_response.body, @json_parser_opts)
+    assert_equal('UP, RUNNING', parsed_object[:status])
+  end
+
+  def test_esxi_status_when_off_should_return_json_and_http_200
+    @system_gateway.esxi_off = true
+
+    get '/control/esxi/status.json'
+
+    assert_equal(200, last_response.status)
+    parsed_object = JSON.parse(last_response.body, @json_parser_opts)
+    assert_equal('DOWN', parsed_object[:status])
   end
 end
