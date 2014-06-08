@@ -179,6 +179,14 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal('SC43', disk1[:revision])
     assert_equal(2794.0, disk1[:size_gigabytes])
     assert_equal('/vmfs/devices/disks/t10.ATA_ST3000VN0002D1H4167__W300H4CK', disk1[:device])
+    disk2 = parsed_object[:disks][1]
+    assert_equal(2, disk2[:id])
+    disk3 = parsed_object[:disks][2]
+    assert_equal(3, disk3[:id])
+    disk4 = parsed_object[:disks][3]
+    assert_equal(4, disk4[:id])
+    disk5 = parsed_object[:disks][4]
+    assert_equal(5, disk5[:id])
 
     assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end

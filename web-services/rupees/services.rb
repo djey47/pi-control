@@ -219,8 +219,9 @@ class Services < Sinatra::Base
             size_gigabytes,
             drive['Devfs Path']
         )
+
+        simple_id += 1
       end
-      simple_id += 1
     end
     disks
   end
