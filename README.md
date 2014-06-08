@@ -22,6 +22,8 @@ Ruby dependencies:
 ### Utility gems
 - bundler v1.6.2
 
+Once bundler installed, grab all gems with issuing a *bundle install* command from source root directory.
+
 
 Configuration:
 --------------
@@ -55,6 +57,7 @@ Enabled services:
 
 ### Service URLs:
 Server port is not configurable atm. Set to **4600**.
+
 - **/** : just as a proof that server is alive :)
 - **/big_brother.json** : returns contents of *big_brother.log* file
 - **/control/esxi/status.json** : returns status (UP/UP, RUNNING/DOWN) of hypervisor (uses ping and ssh)
@@ -63,9 +66,10 @@ Server port is not configurable atm. Set to **4600**.
 - **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time. Uses crontab.
 - **/control/esxi/schedule/disable** : erases scheduled on/off events - *bugged : does not work for now*
 - **/control/esxi/schedule/status** : returns current schedule if set, or disabled
-- **/control/esxi/vms.json** : returns list of hypervisor's virtual machines
-- **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine
-- **/control/esxi/disks.json** : returns list of hard disks plugged to hypervisor with a few details
+- **/control/esxi/vms.json** : returns list of hypervisor's virtual machines (uses ssh)
+- **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine (uses ssh)
+- **/control/esxi/disks.json** : returns list of hard disks plugged to hypervisor with a few details (uses ssh-esxcli)
+- **/control/esxi/disk/[disk_id]/smart.json** : returns SMART details of specified hard disk (uses sshesxcli)
 
 
 API details:

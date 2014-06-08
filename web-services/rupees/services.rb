@@ -6,8 +6,11 @@ require 'sinatra/base'
 require_relative 'system_gateway'
 require_relative 'common/configuration'
 require_relative 'model/disk'
+require_relative 'model/disk_smart'
+require_relative 'model/smart_item'
 require_relative 'model/virtual_machine'
 require_relative 'model/schedule_status'
+require_relative 'model/disk_not_found_error'
 require_relative 'model/v_m_not_found_error'
 require_relative 'model/invalid_argument_error'
 require_relative 'model/ssh_error'
@@ -261,7 +264,55 @@ class Services < Sinatra::Base
     end
   end
 
-private
+  def get_smart(disk_id)
+    @logger.info('[Services][disk_smart.json]')
+
+    @big_brother.info("IP #{request.ip} has just requested SMART details of disk ##{disk_id}.")
+
+    validate_disk_id(disk_id)
+
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+
+    # Gets technical id from simple id
+    tech_id = nil
+    get_disks.each do |disk|
+      if disk.id == disk_id.to_i
+        tech_id = disk.tech_id
+        break
+      end
+    end
+
+    unless tech_id.nil?
+      # Requests SMART data
+      out = @system_gateway.ssh(host_name, user, "esxcli storage core device smart get -d #{tech_id}")
+
+      items = []
+      item_id = 1
+      out.split("\n").each_with_index do |line, index|
+        # 1st and 2nd are ignored (decoration)
+        if index > 1
+
+          label = line[0, 28].strip
+          value = line[30, 3].strip
+          threshold = line[37, 3].strip
+          worst = line[48, 3].strip
+
+          #TODO get item status
+          items << SmartItem.new(item_id, label, value, worst, threshold, '<FAKE>')
+
+          item_id += 1
+        end
+      end
+
+      # TODO get i_status
+      return DiskSmart.new('<FAKE>', items)
+    end
+
+    raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")
+  end
+
+  private
   #Utilities
 
   #XHR requests provide HTTP_ORIGIN header; for responses to be accepted, Access-Control-Allow-Origin header must be present in response
@@ -284,6 +335,11 @@ private
     raise(InvalidArgumentError.new, "Invalid VM identifier: #{id}") if val.nil?
   end
 
+  def validate_disk_id(id)
+    val = Integer(id) rescue nil
+    raise(InvalidArgumentError.new, "Invalid disk identifier: #{id}") if val.nil?
+  end
+
   def validate_parse_time(time)
     #Format : HH:MM (24 hour format)
     /(?<hours>\d{1,2}):(?<minutes>\d{1,2})/.match(time) do |match_data|
@@ -295,7 +351,7 @@ private
     raise(InvalidArgumentError.new, "Invalid time parameter: #{time}")
   end
 
-public
+  public
   #config
   set :port, SERVER_PORT
   if Configuration::get.app_is_production
@@ -450,13 +506,30 @@ public
       [200,
        {:status => get_esxi_status}.to_json
       ]
-  #   rescue SSHError => err
-  #     @logger.error("[Services][disks.json] #{err.inspect}")
-  #     503
     rescue => exception
       @logger.error("[Services][esxi_status.json] #{exception.inspect}")
       500
     end
   end
+
+  #Returns smart details about given disk
+  get '/control/esxi/disk/:disk_id/smart.json' do |disk_id|
+    begin
+      handle_headers_for_json
+      [
+          {:smart => get_smart(disk_id)}.to_json
+      ]
+    rescue InvalidArgumentError => err
+      @logger.error("[Services][disk_smart.json] #{err.inspect}")
+      400
+    rescue DiskNotFoundError => err
+      @logger.error("[Services][disk_smart.json] #{err.inspect}")
+      404
+    rescue => exception
+      @logger.error("[Services][disk_smart.json] #{exception.inspect}")
+      500
+    end
+  end
+
 
 end
