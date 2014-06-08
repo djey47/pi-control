@@ -205,19 +205,22 @@ class Services < Sinatra::Base
 
     #Filtering to keep only hard disks
     disks = []
+    simple_id = 1
     drives.each do |drive|
       unless drive['Is Boot USB Device'] == 'true'
         size_megabytes = drive['Size']
         size_gigabytes = (size_megabytes.to_i / 1024).round(4)
 
         disks << Disk.new(
+            simple_id,
             drive['Id'],
             drive['Model'],
+            drive['Revision'],
             size_gigabytes,
             drive['Devfs Path']
-            #TODO Temp and status
         )
       end
+      simple_id += 1
     end
     disks
   end

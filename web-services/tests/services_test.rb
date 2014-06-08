@@ -170,7 +170,16 @@ class ServicesTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert(parsed_object[:disks].is_a? Array)
-    #TODO : Assert contents
+    assert_equal(5, parsed_object[:disks].size)
+
+    disk1 = parsed_object[:disks][0]
+    assert_equal(1, disk1[:id])
+    assert_equal('t10.ATA_ST3000VN0002D1H4167__W300H4CK', disk1[:tech_id])
+    assert_equal('ST3000VN000-1H41', disk1[:model])
+    assert_equal('SC43', disk1[:revision])
+    assert_equal(2794.0, disk1[:size_gigabytes])
+    assert_equal('/vmfs/devices/disks/t10.ATA_ST3000VN0002D1H4167__W300H4CK', disk1[:device])
+
     assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end
 

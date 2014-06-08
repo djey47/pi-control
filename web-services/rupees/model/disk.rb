@@ -3,32 +3,29 @@
 class Disk
 
   attr_reader :id
+  attr_reader :tech_id
   attr_reader :model
+  attr_reader :revision
   attr_reader :size_gigabytes
   attr_reader :device
-  attr_reader :temperature_celsius
-  attr_reader :smart_status
-  attr_reader :smartx_status
 
-  def initialize(id = -1, model = 'N/A', size_gigabytes = -1, device = 'N/A', temperature_celsius = -1, smart_status = 'N/A', smartx_status = 'N/A')
+  def initialize(id = -1, tech_id = 'N/A', model = 'N/A', revision = 'N/A', size_gigabytes = -1, device = 'N/A')
     @id = id
+    @tech_id = tech_id
     @model = model
+    @revision = revision
     @size_gigabytes = size_gigabytes
     @device = device
-    @temperature_celsius = temperature_celsius
-    @smart_status = smart_status
-    @smartx_status = smartx_status
   end
 
   def to_json(*a)
     {
         :id => @id,
+        :tech_id => @tech_id,
         :model => @model,
+        :revision => @revision,
         :size_gigabytes => @size_gigabytes,
-        :device => @device,
-        :temperature_celsius => @temperature_celsius,
-        :smart_status => @smart_status,
-        :smartx_status => @smartx_status
+        :device => @device
     }.to_json(*a)
   end
 end
