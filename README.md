@@ -69,7 +69,7 @@ Server port is not configurable atm. Set to **4600**.
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines (uses ssh)
 - **/control/esxi/vm/[vm_id]/status.json** : returns status (ON/OFF) of specified virtual machine (uses ssh)
 - **/control/esxi/disks.json** : returns list of hard disks plugged to hypervisor with a few details (uses ssh-esxcli)
-- **/control/esxi/disk/[disk_id]/smart.json** : returns SMART details of specified hard disk (uses sshesxcli)
+- **/control/esxi/disk/[disk_id]/smart.json** : returns SMART details of specified hard disk (uses ssh-esxcli)
 
 
 API details:
