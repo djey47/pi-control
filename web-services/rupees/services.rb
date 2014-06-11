@@ -190,8 +190,8 @@ class Services < Sinatra::Base
     out = @system_gateway.ssh(host_name, user, 'esxcli storage core device list')
 
     #Gathering all drives
-    drives = []
-    out.split("\n\n").each do |drive|
+    drives = out.split("\n\n").map do |drive|
+
       drive_infos = {}
       drive.split("\n").each_with_index do |item, index|
         #First item is disk id
@@ -203,30 +203,30 @@ class Services < Sinatra::Base
           drive_infos.merge!( key => value )
         end
       end
-      drives << drive_infos
+
+      drive_infos
     end
 
     #Filtering to keep only hard disks
-    disks = []
-    simple_id = 1
-    drives.each do |drive|
-      unless drive['Is Boot USB Device'] == 'true'
-        size_megabytes = drive['Size']
-        size_gigabytes = (size_megabytes.to_i / 1024).round(4)
+    hard_disks = drives.select { |drive| drive['Is Boot USB Device'] != 'true'}
+    
+    #Sorting by technical id
+    hard_disks.sort! { |hd1,hd2| hd1['Id'] <=> hd2['Id'] }
 
-        disks << Disk.new(
-            simple_id,
-            drive['Id'],
-            drive['Model'],
-            drive['Revision'],
-            size_gigabytes,
-            drive['Devfs Path']
-        )
+    #Mapping to disks structure
+    hard_disks.map.with_index do |hd, index|
 
-        simple_id += 1
-      end
+      size_megabytes = hd['Size']
+      size_gigabytes = (size_megabytes.to_i / 1024).round(4)
+
+      Disk.new(
+          index + 1,
+          hd['Id'],
+          hd['Model'],
+          hd['Revision'],
+          size_gigabytes,
+          hd['Devfs Path'])
     end
-    disks
   end
 
   def get_esxi_status
