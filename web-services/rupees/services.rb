@@ -169,8 +169,8 @@ class Services < Sinatra::Base
 
     entries = @system_gateway.crontab_list
 
-    on_entry  = entries[CRONTAB_ID_ON]
-    off_entry  = entries[CRONTAB_ID_OFF]
+    on_entry = entries[CRONTAB_ID_ON]
+    off_entry = entries[CRONTAB_ID_OFF]
 
     return ScheduleStatus.new(nil, nil) if on_entry.nil? or off_entry.nil?
 
@@ -196,11 +196,11 @@ class Services < Sinatra::Base
       drive.split("\n").each_with_index do |item, index|
         #First item is disk id
         if index == 0
-          drive_infos.merge!( 'Id' => item )
+          drive_infos.merge!('Id' => item)
         else
           key = item.split(':')[0].strip
           value = item.split(':')[1].strip
-          drive_infos.merge!( key => value )
+          drive_infos.merge!(key => value)
         end
       end
 
@@ -208,24 +208,34 @@ class Services < Sinatra::Base
     end
 
     #Filtering to keep only hard disks
-    hard_disks = drives.select { |drive| drive['Is Boot USB Device'] != 'true'}
-    
+    hard_disks = drives.select { |drive| drive['Is Boot USB Device'] == 'false' }
+
     #Sorting by technical id
-    hard_disks.sort! { |hd1,hd2| hd1['Id'] <=> hd2['Id'] }
+    hard_disks.sort! { |hd1, hd2| hd1['Id'] <=> hd2['Id'] }
 
     #Mapping to disks structure
     hard_disks.map.with_index do |hd, index|
 
+      # Converts size from mb to gb
       size_megabytes = hd['Size']
       size_gigabytes = (size_megabytes.to_i / 1024).round(4)
+
+      # Extracts additional, more reliable information from ID
+      complement = hd['Id'].split('_').select! { |item| item.length > 0}
+      port = complement[0]
+      full_model = complement[1] # As hd['Model'] is incomplete
+      serial_no = complement[2]
 
       Disk.new(
           index + 1,
           hd['Id'],
-          hd['Model'],
+          full_model,
           hd['Revision'],
           size_gigabytes,
-          hd['Devfs Path'])
+          hd['Devfs Path'],
+          serial_no,
+          port
+      )
     end
   end
 
@@ -343,8 +353,8 @@ class Services < Sinatra::Base
   def validate_parse_time(time)
     #Format : HH:MM (24 hour format)
     /(?<hours>\d{1,2}):(?<minutes>\d{1,2})/.match(time) do |match_data|
-      hrs = Integer(match_data['hours'],10)
-      mins = Integer(match_data['minutes'],10)
+      hrs = Integer(match_data['hours'], 10)
+      mins = Integer(match_data['minutes'], 10)
 
       return hrs, mins if hrs.between?(0, 23) and mins.between?(0, 59)
     end

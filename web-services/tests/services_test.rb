@@ -175,9 +175,11 @@ class ServicesTest < Test::Unit::TestCase
     disk1 = parsed_object[:disks][0]
     assert_equal(1, disk1[:id])
     assert_equal('t10.ATA_ST2000DL0032D9VT166__5YD1XA4F', disk1[:tech_id])
-    assert_equal('ST2000DL003-9VT1', disk1[:model])
+    assert_equal('ST2000DL0032D9VT166', disk1[:model])
     assert_equal('CC32', disk1[:revision])
     assert_equal(1863.0, disk1[:size_gigabytes])
+    assert_equal('5YD1XA4F', disk1[:serial_no])
+    assert_equal('t10.ATA', disk1[:port])
     assert_equal('/vmfs/devices/disks/t10.ATA_ST2000DL0032D9VT166__5YD1XA4F', disk1[:device])
     disk2 = parsed_object[:disks][1]
     assert_equal(2, disk2[:id])
