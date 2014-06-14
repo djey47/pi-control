@@ -74,11 +74,12 @@ class ServicesFocusOnBigBrotherTest < Test::Unit::TestCase
   end
 
   def test_esxi_disks_smart_should_tell_big_brother
-    assert_big_brother('/control/esxi/disk/1/smart.json', ' has just requested SMART details of disk #1.')
+    # 2 events written, 1: request for smart -  2: disk list (to get tech id)
+    assert_big_brother('/control/esxi/disk/2/smart.json', ' has just requested SMART details of disk #2.', ' has just requested disk list.')
   end
 
   #Utilities
-  def assert_big_brother(path, included_expression)
+  def assert_big_brother(path, *included_expressions)
     big_brother_prev_contents = File.new(@big_brother_file_name).readlines
 
     get path
@@ -86,8 +87,9 @@ class ServicesFocusOnBigBrotherTest < Test::Unit::TestCase
     assert(File.exists?(@big_brother_file_name))
 
     big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + 1)
+    assert(big_brother_new_contents.count == big_brother_prev_contents.count + included_expressions.count)
 
-    assert(big_brother_new_contents.last.include?(included_expression))
+    last_events = big_brother_new_contents.last(included_expressions.count)
+    last_events.each_with_index { |event, index| assert(event.include?(included_expressions[index]))}
   end
 end
