@@ -193,6 +193,9 @@ class ServicesTest < Test::Unit::TestCase
     disk5 = parsed_object[:disks][4]
     assert_equal(5, disk5[:id])
     assert_equal('t10.ATA_WDC_WD2500BEVT2D75ZCT2__WD2DWXH109031153', disk5[:tech_id])
+    assert_equal('WD2500BEVT2D75ZCT2', disk5[:model])
+    assert_equal('WD2DWXH109031153', disk5[:serial_no])
+    assert_equal('t10.ATA', disk5[:port])
 
     assert_true(@system_gateway.verify, 'Unproper call to system gateway')
   end

@@ -223,8 +223,17 @@ class Services < Sinatra::Base
       # Extracts additional, more reliable information from ID
       complement = hd['Id'].split('_').select! { |item| item.length > 0}
       port = complement[0]
-      full_model = complement[1] # As hd['Model'] is incomplete
-      serial_no = complement[2]
+
+      # As hd['Model'] is incomplete
+      if complement.length == 3
+        full_model = complement[1]
+        serial_no = complement[2]
+      end
+      if complement.length == 4
+        # Hack for WD disks : rank 1 is just WDC brand name
+        full_model = complement[2]
+        serial_no = complement[3]
+      end
 
       Disk.new(
           index + 1,
