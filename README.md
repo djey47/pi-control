@@ -3,10 +3,11 @@ pi-control
 
 Set of web-services to control/monitor ESXi hypervisor from a linux-based, always-ON device (e.g. Raspberry Pi)
 
-
 Ruby dependencies:
 ------------------
 (dev on core 2.0.0-p247)
+
+see ./web-services/Gemfile
 
 ### Runtime gems:
 - cronedit v0.3.0
@@ -61,10 +62,10 @@ Server port is not configurable atm. Set to **4600**.
 
 - **/** : just as a proof that server is alive :)
 - **/big_brother.json** : returns contents of *big_brother.log* file
-- **/control/esxi/status.json** : returns status (UP/UP, RUNNING/DOWN) of hypervisor (uses ping and ssh)
+- **/control/esxi/status.json** : returns status of hypervisor (uses ping and ssh)
 - **/control/esxi/on** : turns on hypervisor (uses wakeonlan)
 - **/control/esxi/off** : turns off hypervisor (uses ssh to connect, then poweroff)
-- **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time. Uses crontab.
+- **/control/esxi/schedule/enable/[on_time]/[off_time]** : turns hypervisor on at on_time (00:00 -> 23:59), off at off_time (uses crontab)
 - **/control/esxi/schedule/disable** : erases scheduled on/off events - *bugged : does not work for now*
 - **/control/esxi/schedule/status** : returns current schedule if set, or disabled
 - **/control/esxi/vms.json** : returns list of hypervisor's virtual machines (uses ssh)
@@ -76,6 +77,21 @@ Server port is not configurable atm. Set to **4600**.
 API details:
 ------------
 
+### Returned objects
+- **big_brother.json** : {"events":["EVT1", ... , "EVTn"]}
+- **esxi-status.json** : {"status":"STATE"}
+  - **STATE** :  UP|UP, RUNNING|DOWN
+- **esxi-schedule-status.json** : {"status":{"on_at":"HH:MM","off_at":"HH:MM"}} OR {"status":"disabled"}
+- **esxi-vms.json** : {"virtualMachines":[VM1, ... , VMn]}
+  - **VM** : {"id":"ID","name":"NAME","guest_os":"GUEST_OS"}
+- **esxi-vm-status.json** : {"status":"STATE"}
+  - **STATE** : ON|OFF
+- **esxi-disks.json** : {"disks":[DISK1, ... , DISKn]}
+  - **DISK** : {"id":ID,"tech_id":"TECH_ID","model":"MODEL","revision":"REVISION","size_gigabytes":SIZE,"device":"DEVICE","serial_no":"SERIAL"","port":"PORT"}
+- **esxi-disk-smart.json** : {"smart":{"i_status":"STATE","items":[ITEM1 , ... , ITEMn]}}
+  - **STATE** : OK|KO
+  - **ITEM** : {"id":ID,"worst":"WORST","value":"VALUE","threshold":"THR","label":"LBL","status":"STATE"}
+  
 ### HTTP status codes (will depend on services)
 - **200** : OK, JSON in response body
 - **204** : OK, no response body
