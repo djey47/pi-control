@@ -174,25 +174,25 @@ class ServicesTest < Test::Unit::TestCase
 
     disk1 = parsed_object[:disks][0]
     assert_equal(1, disk1[:id])
-    assert_equal('t10.ATA_ST2000DL0032D9VT166__5YD1XA4F', disk1[:tech_id])
+    assert_equal('t10.ATA_____ST2000DL0032D9VT166__________________________________5YD1XA4F', disk1[:tech_id])
     assert_equal('ST2000DL0032D9VT166', disk1[:model])
     assert_equal('CC32', disk1[:revision])
     assert_equal(1863.0, disk1[:size_gigabytes])
     assert_equal('5YD1XA4F', disk1[:serial_no])
     assert_equal('t10.ATA', disk1[:port])
-    assert_equal('/vmfs/devices/disks/t10.ATA_ST2000DL0032D9VT166__5YD1XA4F', disk1[:device])
+    assert_equal('/vmfs/devices/disks/t10.ATA_____ST2000DL0032D9VT166__________________________________5YD1XA4F', disk1[:device])
     disk2 = parsed_object[:disks][1]
     assert_equal(2, disk2[:id])
-    assert_equal('t10.ATA_ST2000DL0032D9VT166__5YD2HWZ3', disk2[:tech_id])
+    assert_equal('t10.ATA_____ST2000DL0032D9VT166__________________________________5YD2HWZ3', disk2[:tech_id])
     disk3 = parsed_object[:disks][2]
     assert_equal(3, disk3[:id])
-    assert_equal('t10.ATA_ST3000VN0002D1H4167__W300GKNA', disk3[:tech_id])
+    assert_equal('t10.ATA_____ST3000VN0002D1H4167__________________________________W300GKNA', disk3[:tech_id])
     disk4 = parsed_object[:disks][3]
     assert_equal(4, disk4[:id])
-    assert_equal('t10.ATA_ST3000VN0002D1H4167__W300H4CK', disk4[:tech_id])
+    assert_equal('t10.ATA_____ST3000VN0002D1H4167__________________________________W300H4CK', disk4[:tech_id])
     disk5 = parsed_object[:disks][4]
     assert_equal(5, disk5[:id])
-    assert_equal('t10.ATA_WDC_WD2500BEVT2D75ZCT2__WD2DWXH109031153', disk5[:tech_id])
+    assert_equal('t10.ATA_____WDC_WD2500BEVT2D75ZCT2________________________WD2DWXH109031153', disk5[:tech_id])
     assert_equal('WD2500BEVT2D75ZCT2', disk5[:model])
     assert_equal('WD2DWXH109031153', disk5[:serial_no])
     assert_equal('t10.ATA', disk5[:port])

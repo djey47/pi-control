@@ -14,6 +14,7 @@ require_relative 'model/disk_not_found_error'
 require_relative 'model/v_m_not_found_error'
 require_relative 'model/invalid_argument_error'
 require_relative 'model/ssh_error'
+require_relative 'utils/csv_to_hashes'
 
 #noinspection RailsParamDefResolve
 class Services < Sinatra::Base
@@ -38,6 +39,8 @@ class Services < Sinatra::Base
   HDR_ORIGIN = 'HTTP_ORIGIN'
 
   # To inject different gateways (real and mock)
+  # require_relative '../tests/utils/system_gateway_mock'
+  # def initialize(system_gateway = SystemGatewayMock.new)
   def initialize(system_gateway = SystemGateway.new)
     @system_gateway = system_gateway
 
@@ -187,49 +190,35 @@ class Services < Sinatra::Base
     host_name = Configuration::get.esxi_host_name
     user = Configuration::get.esxi_user
 
-    out = @system_gateway.ssh(host_name, user, 'esxcli storage core device list')
+    out = @system_gateway.ssh(host_name, user, 'esxcli --formatter=csv storage core device list')
 
     #Gathering all drives
-    drives = out.split("\n\n").map do |drive|
-
-      drive_infos = {}
-      drive.split("\n").each_with_index do |item, index|
-        #First item is disk id
-        if index == 0
-          drive_infos.merge!('Id' => item)
-        else
-          key = item.split(':')[0].strip
-          value = item.split(':')[1].strip
-          drive_infos.merge!(key => value)
-        end
-      end
-
-      drive_infos
-    end
+    drives = CSVToHashes::convert(out)
 
     #Filtering to keep only hard disks
-    hard_disks = drives.select { |drive| drive['Is Boot USB Device'] == 'false' }
+    hard_disks = drives.select { |drive| drive['IsBootUSBDevice'] == 'false' }
 
     #Sorting by technical id
-    hard_disks.sort! { |hd1, hd2| hd1['Id'] <=> hd2['Id'] }
+    hard_disks.sort! { |hd1, hd2| hd1['Device'] <=> hd2['Device'] }
 
     #Mapping to disks structure
-    hard_disks.map.with_index do |hd, index|
+    hard_disks.map.with_index { |hd, index|
 
       # Converts size from mb to gb
       size_megabytes = hd['Size']
       size_gigabytes = (size_megabytes.to_i / 1024).round(4)
 
       # Extracts additional, more reliable information from ID
-      complement = hd['Id'].split('_').select! { |item| item.length > 0}
+      complement = hd['Device'].split('_').select! { |item| item.length > 0}
       port = complement[0]
 
       # As hd['Model'] is incomplete
+      full_model = 'N/A'
+      serial_no = 'N/A'
       if complement.length == 3
         full_model = complement[1]
         serial_no = complement[2]
-      end
-      if complement.length == 4
+      elsif complement.length == 4
         # Hack for WD disks : rank 1 is just WDC brand name
         full_model = complement[2]
         serial_no = complement[3]
@@ -237,15 +226,15 @@ class Services < Sinatra::Base
 
       Disk.new(
           index + 1,
-          hd['Id'],
+          hd['Device'],
           full_model,
           hd['Revision'],
           size_gigabytes,
-          hd['Devfs Path'],
+          hd['DevfsPath'],
           serial_no,
           port
       )
-    end
+    }
   end
 
   def get_esxi_status
@@ -549,6 +538,4 @@ class Services < Sinatra::Base
       500
     end
   end
-
-
 end
