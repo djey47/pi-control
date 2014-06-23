@@ -192,11 +192,8 @@ class Services < Sinatra::Base
 
     out = @system_gateway.ssh(host_name, user, 'esxcli --formatter=csv storage core device list')
 
-    #Gathering all drives
-    drives = CSVToHashes::convert(out)
-
-    #Filtering to keep only hard disks
-    hard_disks = drives.select { |drive| drive['IsBootUSBDevice'] == 'false' }
+    #Gathering all drives and Filtering to keep only hard disks
+    hard_disks = CSVToHashes::convert(out).select { |drive| drive['IsBootUSBDevice'] == 'false' }
 
     #Sorting by technical id
     hard_disks.sort! { |hd1, hd2| hd1['Device'] <=> hd2['Device'] }
@@ -283,6 +280,7 @@ class Services < Sinatra::Base
     user = Configuration::get.esxi_user
 
     # Gets technical id from simple id
+    # TODO use cache !
     tech_id = nil
     get_disks.each do |disk|
       if disk.id == disk_id.to_i
@@ -293,25 +291,24 @@ class Services < Sinatra::Base
 
     unless tech_id.nil?
       # Requests SMART data
-      out = @system_gateway.ssh(host_name, user, "esxcli storage core device smart get -d #{tech_id}")
+      out = @system_gateway.ssh(host_name, user, "esxcli --formatter=csv storage core device smart get -d #{tech_id}")
 
-      items = []
-      item_id = 1
-      out.split("\n").each_with_index do |line, index|
-        # 1st and 2nd are ignored (decoration)
-        if index > 1
+      items = CSVToHashes::convert(out).map.with_index { |item, index |
 
-          label = line[0, 28].strip
-          value = line[30, 3].strip
-          threshold = line[37, 3].strip
-          worst = line[48, 3].strip
+        label = item['Parameter']
+        value = item['Value']
+        threshold = item['Threshold']
+        worst = item['Worst']
 
-          #TODO get item status
-          items << SmartItem.new(item_id, label, value, worst, threshold, '<FAKE>')
-
-          item_id += 1
-        end
-      end
+        #TODO get item status
+        SmartItem.new(
+          index + 1,
+          label,
+          value,
+          worst,
+          threshold,
+          '<FAKE>')
+      }
 
       # TODO get i_status
       return DiskSmart.new('<FAKE>', items)
