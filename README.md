@@ -28,11 +28,7 @@ Once bundler installed, grab all gems with issuing a *bundle install* command fr
 How to install?
 ---------------
 
-### Requirements:
-- Hypervisor should be VMWare ESXi 5.5 (may work under 5.1 but untested)
-- Client must have *ssh* and *wakeonlan* utilities available
-- Target server must be accessible from SSH client on default port (22), without password (public key copied to *authorized_keys* file).
-- Target server IP must be in *known_hosts* files on source ! Otherwise esxi/off command will fail. To do this, use *ssh* to once connect target server manually.
+Please have a look at wiki: https://github.com/djey47/pi-control/wiki
 
 Configuration:
 --------------
