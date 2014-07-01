@@ -28,27 +28,17 @@ Once bundler installed, grab all gems with issuing a *bundle install* command fr
 How to install?
 ---------------
 
-Please have a look at wiki: https://github.com/djey47/pi-control/wiki
+Please have a look at wiki: https://github.com/djey47/pi-control/wiki/How-to-install%3F
 
 Configuration:
 --------------
-Please watch and update *./web-services/conf/pi-control.yml* accordingly:
 
-- Set app/is-production flag to false when developing, true when running on a server (allowing access from other machines).
-
-- Define esxi/hostname and esxi/user params for app to access ESXi hypervisor via SSH.
-
-- Also requires MAC address of hypervisor (esxi/mac-address) and LAN broadcast address (lan/broadcast-adress).
+Please have a look at wiki: https://github.com/djey47/pi-control/wiki/How-to-configure%3F
 
 How to use:
 -----------
-**Important : set current directory to app root else it won't be able to read config file**
 
-- To execute tests : use provided script: **./scripts/test.sh**
-
-- To start web-services : use provided script : **./scripts/start.sh**
-
-- To stop it : kill it !
+Please have a look at wiki: https://github.com/djey47/pi-control/wiki/How-to-use%3F
 
 API documentation :
 -------------------
