@@ -1,4 +1,5 @@
-source :rubygems
+source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'cronedit', '0.3.0'
 gem 'sinatra', '1.4.4'
