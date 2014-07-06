@@ -274,11 +274,11 @@ class Services
           value,
           worst,
           threshold,
-          '<FAKE>')
+          '<WIP>')
       }
 
       # TODO get i_status
-      return DiskSmart.new('<FAKE>', items)
+      return DiskSmart.new('<WIP>', items)
     end
 
     raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")

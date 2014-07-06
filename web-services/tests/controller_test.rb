@@ -249,7 +249,7 @@ class ControllerTest < Test::Unit::TestCase
 
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
-    assert_equal('<FAKE>', parsed_object[:smart][:i_status])
+    assert_equal('<WIP>', parsed_object[:smart][:i_status])
     assert(parsed_object[:smart][:items].is_a? Array)
     assert_equal(13, parsed_object[:smart][:items].size)
 
@@ -259,7 +259,7 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal('OK', item1[:value])
     assert_equal('N/A', item1[:threshold])
     assert_equal('N/A', item1[:worst])
-    assert_equal('<FAKE>', item1[:status])
+    assert_equal('<WIP>', item1[:status])
     item2 = parsed_object[:smart][:items][1]
     assert_equal(2, item2[:id])
     item3 = parsed_object[:smart][:items][2]
