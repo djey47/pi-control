@@ -41,6 +41,18 @@ class ControllerFocusOnBigBrotherTest < Test::Unit::TestCase
     assert_big_brother('/control/esxi/vm/1/status.json', ' has just requested status of virtual machine #1.')
   end
 
+  def test_esxi_vm_on_should_tell_big_brother
+    assert_big_brother('/control/esxi/vm/1/on', ' has just requested virtual machine #1 to turn on.')
+  end
+
+  def test_esxi_vm_off_should_tell_big_brother
+    assert_big_brother('/control/esxi/vm/1/off', ' has just requested virtual machine #1 to turn off.')
+  end
+
+  def test_esxi_vm_force_off_should_tell_big_brother
+    assert_big_brother('/control/esxi/vm/1/off!', ' has just requested virtual machine #1 to STOP.')
+  end
+
   def test_esxi_schedule_enable_should_tell_big_brother
     assert_big_brother('/control/esxi/schedule/enable/07:00/02:00', ' has just requested scheduling of')
   end

@@ -124,6 +124,43 @@ class Services
     vm_status
   end
 
+  def virtual_machine_on(id)
+    @logger.info('[Services][vm_on]')
+
+    validate_vm_id(id)
+
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+
+    out = @system_gateway.ssh(host_name, user, "vim-cmd vmsvc/power.on #{id}")
+
+    raise(VMNotFoundError.new, "Invalid VM id=#{id}") if out == ''
+  end
+
+  def virtual_machine_off(id)
+    @logger.info('[Services][vm_off]')
+
+    validate_vm_id(id)
+
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+
+    @system_gateway.ssh(host_name, user, "vim-cmd vmsvc/power.shutdown #{id}")
+  end
+
+  def virtual_machine_off!(id)
+    @logger.info('[Services][vm_off!]')
+
+    validate_vm_id(id)
+
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+
+    out = @system_gateway.ssh(host_name, user, "vim-cmd vmsvc/power.off #{id}")
+
+    raise(VMNotFoundError.new, "Invalid VM id=#{id}") if out == ''
+    end
+
   def enable_schedule(on_time, off_time)
     @logger.info('[Services][enable_schedule]')
 

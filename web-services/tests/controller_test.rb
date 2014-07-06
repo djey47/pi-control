@@ -119,6 +119,45 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal(400, last_response.status)
   end
 
+  def test_esxi_vm_on_should_call_gateway_and_return_http_204
+    get '/control/esxi/vm/1/on'
+
+    assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_vm_on_invalid_vm_return_http_404
+    get '/control/esxi/vm/0/on'
+
+    assert_equal(404, last_response.status)
+  end
+
+  def test_esxi_vm_off_should_call_gateway_and_return_http_204
+    get '/control/esxi/vm/1/off'
+
+    assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_vm_off_invalid_vm_return_http_204
+    get '/control/esxi/vm/0/off'
+
+    assert_equal(204, last_response.status)
+  end
+
+  def test_esxi_vm_force_off_should_call_gateway_and_return_http_204
+    get '/control/esxi/vm/1/off!'
+
+    assert_equal(204, last_response.status)
+    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+  end
+
+  def test_esxi_vm_force_off_invalid_vm_return_http_404
+    get '/control/esxi/vm/0/off!'
+
+    assert_equal(404, last_response.status)
+  end
+
   def test_esxi_schedule_enable_shoud_call_gateway_and_return_http_204
     get '/control/esxi/schedule/enable/07:00/02:00'
 
@@ -267,4 +306,5 @@ class ControllerTest < Test::Unit::TestCase
     item4 = parsed_object[:smart][:items][3]
     assert_equal(4, item4[:id])
   end
+
 end

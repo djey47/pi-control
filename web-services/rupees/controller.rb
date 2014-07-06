@@ -156,6 +156,69 @@ class Controller < Sinatra::Base
     end
   end
 
+  #Starts specified virtual machine
+  get '/control/esxi/vm/:id/on' do |id|
+    begin
+      @big_brother.info("IP #{request.ip} has just requested virtual machine ##{id} to turn on.")
+
+      @services.virtual_machine_on(id)
+      204
+    rescue InvalidArgumentError => err
+      @logger.error("[Controller][vm_on] #{err.inspect}")
+      400
+    rescue VMNotFoundError => err
+      @logger.error("[Controller][vm_on] #{err.inspect}")
+      404
+    rescue SSHError => err
+      @logger.error("[Controller][vm_on] #{err.inspect}")
+      503
+    rescue => exception
+      @logger.error("[Controller][vm_on] #{exception.inspect}")
+      500
+    end
+  end
+
+  #Stops specified virtual machine
+  get '/control/esxi/vm/:id/off' do |id|
+    begin
+      @big_brother.info("IP #{request.ip} has just requested virtual machine ##{id} to turn off.")
+
+      @services.virtual_machine_off(id)
+      204
+    rescue InvalidArgumentError => err
+      @logger.error("[Controller][vm_off] #{err.inspect}")
+      400
+    rescue SSHError => err
+      @logger.error("[Controller][vm_off] #{err.inspect}")
+      503
+    rescue => exception
+      @logger.error("[Controller][vm_off] #{exception.inspect}")
+      500
+    end
+  end
+
+  #Forces stop specified virtual machine
+  get '/control/esxi/vm/:id/off!' do |id|
+    begin
+      @big_brother.info("IP #{request.ip} has just requested virtual machine ##{id} to STOP.")
+
+      @services.virtual_machine_off!(id)
+      204
+    rescue InvalidArgumentError => err
+      @logger.error("[Controller][vm_off!] #{err.inspect}")
+      400
+    rescue VMNotFoundError => err
+      @logger.error("[Controller][vm_off!] #{err.inspect}")
+      404
+    rescue SSHError => err
+      @logger.error("[Controller][vm_off!] #{err.inspect}")
+      503
+    rescue => exception
+      @logger.error("[Controller][vm_off!] #{exception.inspect}")
+      500
+    end
+  end
+
   #Enables ON/OFF scheduling at given times
   get '/control/esxi/schedule/enable/:on_time/:off_time' do |on_time, off_time|
     begin
