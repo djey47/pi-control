@@ -38,11 +38,15 @@ class Services < Sinatra::Base
   HDR_A_C_ALLOW_ORIGIN = 'Access-Control-Allow-Origin'
   HDR_ORIGIN = 'HTTP_ORIGIN'
 
-  # To inject different gateways (real and mock)
-  # require_relative '../tests/utils/system_gateway_mock'
-  # def initialize(system_gateway = SystemGatewayMock.new)
   def initialize(system_gateway = SystemGateway.new)
+
     @system_gateway = system_gateway
+
+    #To make everything work under development environment
+    unless Configuration::get.app_is_production
+      require_relative '../tests/utils/system_gateway_mock'
+      @system_gateway = SystemGatewayMock.new
+    end
 
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
