@@ -2,7 +2,7 @@
 
 require 'singleton'
 require 'logger'
-require_relative 'services'
+require_relative 'controller'
 
 class PiControl
   include Singleton
@@ -15,7 +15,7 @@ class PiControl
   def run
     server_thread = Thread.new {
       @logger.info('[PiControl] Starting HTTP server...')
-      Services.run!
+      Controller.run!
     }
     @logger.info('[PiControl] Ready to rumble!')
     # Waiting for server thread to terminate

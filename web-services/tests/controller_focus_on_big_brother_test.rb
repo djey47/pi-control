@@ -1,4 +1,4 @@
-# services_focus_on_big_brother_test.rb - Unit Tests
+# controller_focus_on_big_brother_test.rb - Unit Tests
 # Important : please set working directory to pi-control directory (not current dir), to resolve all paths correctly.
 
 ENV['RACK_ENV'] = 'test'
@@ -7,20 +7,20 @@ require 'json'
 require 'rack/test'
 require 'test/unit'
 require_relative 'utils/system_gateway_mock'
-require_relative '../rupees/services'
+require_relative '../rupees/controller'
 
-class ServicesFocusOnBigBrotherTest < Test::Unit::TestCase
+class ControllerFocusOnBigBrotherTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    Services.new(@system_gateway)
+    Controller.new(@system_gateway)
   end
 
   def setup
     @system_gateway = SystemGatewayMock.new
     @json_parser_opts = {:symbolize_names => true}
 
-    @big_brother_file_name = Services::BIG_BROTHER_LOG_FILE_NAME
+    @big_brother_file_name = Controller::BIG_BROTHER_LOG_FILE_NAME
     # Can only be deleted on first time
     File::delete(@big_brother_file_name) rescue nil
   end
@@ -74,8 +74,7 @@ class ServicesFocusOnBigBrotherTest < Test::Unit::TestCase
   end
 
   def test_esxi_disks_smart_should_tell_big_brother
-    # 2 events written, 1: request for smart -  2: disk list (to get tech id)
-    assert_big_brother('/control/esxi/disk/2/smart.json', ' has just requested SMART details of disk #2.', ' has just requested disk list.')
+    assert_big_brother('/control/esxi/disk/2/smart.json', ' has just requested SMART details of disk #2.')
   end
 
   #Utilities
@@ -87,7 +86,7 @@ class ServicesFocusOnBigBrotherTest < Test::Unit::TestCase
     assert(File.exists?(@big_brother_file_name))
 
     big_brother_new_contents = File.new(@big_brother_file_name).readlines
-    assert(big_brother_new_contents.count == big_brother_prev_contents.count + included_expressions.count)
+    assert_equal(big_brother_prev_contents.count + included_expressions.count, big_brother_new_contents.count)
 
     last_events = big_brother_new_contents.last(included_expressions.count)
     last_events.each_with_index { |event, index| assert(event.include?(included_expressions[index]))}

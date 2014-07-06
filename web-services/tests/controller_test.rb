@@ -1,4 +1,4 @@
-# services_test.rb - Unit Tests
+# controller_test.rb - Unit Tests
 # Important : please set working directory to pi-control directory (not current dir), to resolve all paths correctly.
 
 ENV['RACK_ENV'] = 'test'
@@ -8,15 +8,16 @@ require 'rack/test'
 require 'test/unit'
 require_relative 'utils/system_gateway_mock'
 require_relative '../rupees/services'
+require_relative '../rupees/controller'
 require_relative '../rupees/model/virtual_machine'
 require_relative '../rupees/model/schedule_status'
 require_relative '../rupees/model/ssh_error'
 
-class ServicesTest < Test::Unit::TestCase
+class ControllerTest < Test::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    Services.new(@system_gateway)
+    Controller.new(@system_gateway)
   end
 
   def setup
@@ -28,17 +29,17 @@ class ServicesTest < Test::Unit::TestCase
   end
 
   def test_json_service_should_set_response_headers_when_origin_request_header_set
-    get '/big_brother.json', '', Services::HDR_ORIGIN => 'http://origin'
+    get '/big_brother.json', '', Controller::HDR_ORIGIN => 'http://origin'
 
     assert_equal('application/json;charset=utf-8', last_response.headers['Content-Type'])
-    assert_equal('http://origin', last_response.headers[Services::HDR_A_C_ALLOW_ORIGIN])
+    assert_equal('http://origin', last_response.headers[Controller::HDR_A_C_ALLOW_ORIGIN])
   end
 
   def test_json_service_should_set_response_headers_when_origin_request_header_not_set
     get '/big_brother.json'
 
     assert_equal('application/json;charset=utf-8', last_response.headers['Content-Type'])
-    assert_false(last_response.headers.has_key? Services::HDR_A_C_ALLOW_ORIGIN)
+    assert_false(last_response.headers.has_key? Controller::HDR_A_C_ALLOW_ORIGIN)
   end
 
   def test_esxi_off_should_call_gateway_and_return_http_204
