@@ -3,7 +3,11 @@ pi-control
 
 Set of web-services to control/monitor ESXi hypervisor from a linux-based, always-ON device (e.g. Raspberry Pi).
 
-Features : ON/OFF, status, virtual machine list, hard disk list, SMART details of particular disk, etc...
+Featuring [complete API](https://github.com/djey47/pi-control/wiki/API-reference): 
+- hypervisor ON/OFF switch + schedule + status
+- hard disk list + SMART details of particular disk
+- virtual machine list
+- virtual machine ON/OFF switch + status.
 
 Monitoring usage example from web client can be found at following project : [smartX](https://github.com/djey47/smartX)
 
