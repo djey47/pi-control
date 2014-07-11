@@ -2,7 +2,6 @@
 # Tests only
 app :
   is-production : false
-  server-port : 4646
 esxi :
   host-name : test
   user : tester
