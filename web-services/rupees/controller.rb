@@ -13,7 +13,6 @@ require_relative 'model/ssh_error'
 class Controller < Sinatra::Base
 
   #Default parameters
-  DEFAULT_SERVER_PORT = 4600
   BIG_BROTHER_LOG_FILE_NAME = './web-services/logs/big_brother.log'
 
   #HTTP headers
@@ -54,12 +53,8 @@ class Controller < Sinatra::Base
 
   public
   #config
-  server_port = Configuration::get.app_server_port
-  if server_port
-    set :port, server_port
-  else  
-    set :port, DEFAULT_SERVER_PORT
-  end  
+  set :port, Configuration::get.app_server_port
+
   if Configuration::get.app_is_production
     set :environment, :production
     set :show_exceptions, false
