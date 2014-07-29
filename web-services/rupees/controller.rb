@@ -54,7 +54,13 @@ class Controller < Sinatra::Base
 
   public
   #config
-  set :port, SERVER_PORT
+  server_port = Configuration::get.app_server_port
+  if server_port
+    set :port, server_port
+  else  
+    set :port, SERVER_PORT
+  end
+  
   if Configuration::get.app_is_production
     set :environment, :production
     set :show_exceptions, false
