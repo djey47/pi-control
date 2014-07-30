@@ -39,7 +39,7 @@ class ConfigurationTest < Test::Unit::TestCase
     end
   end
 
-  def test_get_inexisting_config_file_then_exception
+  def test_get_no_config_file_then_exception
 
     begin
       Configuration::get('blah.yml')
