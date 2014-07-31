@@ -42,6 +42,6 @@ module SMARTStatusHelper
 
     return :OK if v > t
     return :KO if v <= t
-    return :WARN if w <= t #FIXME
+    #return :WARN if w <= t #FIXME
   end
 end
