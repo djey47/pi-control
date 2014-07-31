@@ -13,6 +13,7 @@ require_relative 'model/v_m_not_found_error'
 require_relative 'model/invalid_argument_error'
 require_relative 'model/ssh_error'
 require_relative 'utils/csv_to_hashes'
+require_relative 'utils/smart_status_helper'
 
 #noinspection RailsParamDefResolve
 class Services
@@ -304,19 +305,20 @@ class Services
         value = item['Value']
         threshold = item['Threshold']
         worst = item['Worst']
+        status = SMARTStatusHelper::get_status(label, value, worst, threshold)
 
-        #TODO get item status
         SmartItem.new(
           index + 1,
           label,
           value,
           worst,
           threshold,
-          '<WIP>')
+          status)
       }
 
-      # TODO get i_status
-      return DiskSmart.new('<WIP>', items)
+      global_status = SMARTStatusHelper.get_global_status(items)
+
+      return DiskSmart.new(global_status, items)
     end
 
     raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")

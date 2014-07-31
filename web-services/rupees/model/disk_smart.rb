@@ -7,7 +7,7 @@ class DiskSmart
   attr_reader :i_status
   attr_reader :items
 
-  def initialize(i_status, items)
+  def initialize(i_status=:UNAVAIL, items)
     @i_status = i_status
     @items = items
   end
