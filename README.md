@@ -19,6 +19,7 @@ see **./web-services/Gemfile**
 
 ### Runtime gems:
 - cronedit v0.3.0
+- diskcached v1.1.0
 - sinatra v1.4.4
   - rack v1.5.2
   - tilt v1.4.1
