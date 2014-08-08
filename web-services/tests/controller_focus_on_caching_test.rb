@@ -30,14 +30,13 @@ class ControllerFocusOnCachingTest < Test::Unit::TestCase
     get '/control/esxi/disks.json'
 
     assert_equal(200, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
 
     # Second call: cache hit
-    @system_gateway.verify = false
     get '/control/esxi/disks.json'
 
     assert_equal(200, last_response.status)
-    assert_false(@system_gateway.verify, 'Should use cache instead of calling system gateway')
+    assert_false(@system_gateway.called?, 'Should use cache instead of calling system gateway')
   end
 
 end

@@ -46,7 +46,7 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/off'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_off_and_esxi_unreachable_should_return_http_503
@@ -61,13 +61,13 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/on'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_vms_should_return_json_list_and_http_200
     get '/control/esxi/vms.json'
 
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_kind_of(Array, parsed_object[:virtualMachines])
@@ -96,7 +96,7 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_equal('ON', parsed_object[:status])
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_vm_status_and_esxi_unreachable_return_http_503
@@ -123,7 +123,7 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/vm/1/on'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_vm_on_invalid_vm_return_http_404
@@ -136,7 +136,7 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/vm/1/off'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_vm_off_invalid_vm_return_http_204
@@ -149,7 +149,7 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/vm/1/off!'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_vm_force_off_invalid_vm_return_http_404
@@ -162,7 +162,7 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/schedule/enable/07:00/02:00'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_schedule_enable_hour_base_10_shoud_return_http_204
@@ -181,7 +181,7 @@ class ControllerTest < Test::Unit::TestCase
     get '/control/esxi/schedule/disable'
 
     assert_equal(204, last_response.status)
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_schedule_status_should_return_json_and_http_200
@@ -191,7 +191,7 @@ class ControllerTest < Test::Unit::TestCase
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_equal('07:00', parsed_object[:status][:on_at])
     assert_equal('02:00', parsed_object[:status][:off_at])
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_schedule_status_and_disabled_should_return_json_and_http_200
@@ -237,7 +237,7 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal('WD2DWXH109031153', disk5[:serial_no])
     assert_equal('t10.ATA', disk5[:port])
 
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_status_when_ping_ok_should_return_json_and_http_200
@@ -248,7 +248,7 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
     assert_equal('UP', parsed_object[:status])
-    assert_true(@system_gateway.verify, 'Unproper call to system gateway')
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
 
   def test_esxi_status_when_running_should_return_json_and_http_200

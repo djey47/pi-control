@@ -4,7 +4,7 @@ require_relative '../../rupees/model/ssh_error'
 
 class SystemGatewayMock
 
-  attr_accessor :verify, :ssh_error, :scheduling_stopped, :esxi_off
+  attr_accessor :ssh_error, :scheduling_stopped, :esxi_off
 
   def initialize
     @logger = Logger.new(STDOUT)
@@ -16,6 +16,8 @@ class SystemGatewayMock
   end
 
   def ssh(host, user_name, command)
+
+    @verify = true
 
     raise 'Undefined host' if host.nil?
     raise 'Undefined user' if user_name.nil?
@@ -54,11 +56,19 @@ class SystemGatewayMock
       when 'uname'
         out = "VMkernel\n"
       else
+        @verify = false
         raise "Unexpected command: #{command}"
     end
 
-    @verify = true
     out
+  end
+
+  # Returns true if a call has been issued and recognized
+  def called?
+    result = @verify
+    #Resets indicator for chaining mock calls
+    @verify = false
+    result
   end
 
   def wakeonlan(mac_address, broadcast_address)
@@ -90,8 +100,8 @@ class SystemGatewayMock
     end
 
     {
-        "#{Services::CRONTAB_ID_ON}" => "0\t7\t*\t*\t*\tcurl http://foo/on",
-        "#{Services::CRONTAB_ID_OFF}" => "0\t2\t*\t*\t*\tcurl http://foo/off"
+        Services::CRONTAB_ID_ON => "0\t7\t*\t*\t*\tcurl http://foo/on",
+        Services::CRONTAB_ID_OFF => "0\t2\t*\t*\t*\tcurl http://foo/off"
     }
   end
 

@@ -27,8 +27,8 @@ class Services
   VM_POWERED_OFF = 'Powered off'
 
   #CRONTAB placeholders and commands
-  CRONTAB_ID_ON = 'ESXI_ON'
-  CRONTAB_ID_OFF = 'ESXI_OFF'
+  CRONTAB_ID_ON = :ESXI_ON
+  CRONTAB_ID_OFF = :ESXI_OFF
   CRONTAB_CMD_ON = "curl http://localhost:#{Configuration::get.app_server_port}/control/esxi/on"
   CRONTAB_CMD_OFF = "curl http://localhost:#{Configuration::get.app_server_port}/control/esxi/off"
 
