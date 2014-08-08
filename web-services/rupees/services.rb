@@ -303,7 +303,6 @@ class Services
     user = Configuration::get.esxi_user
 
     # Gets technical id from simple id
-    # TODO use cache !
     tech_id = nil
     get_disks.each do |disk|
       if disk.id == disk_id.to_i
