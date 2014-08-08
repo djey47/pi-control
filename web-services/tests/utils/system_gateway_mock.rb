@@ -16,6 +16,7 @@ class SystemGatewayMock
   end
 
   def ssh(host, user_name, command)
+
     raise 'Undefined host' if host.nil?
     raise 'Undefined user' if user_name.nil?
 

@@ -24,8 +24,8 @@ class ControllerTest < Test::Unit::TestCase
     @system_gateway = SystemGatewayMock.new
     @json_parser_opts = {:symbolize_names => true}
 
-    # Can only be deleted on first time
-    File::delete(Services::BIG_BROTHER_LOG_FILE_NAME) rescue nil
+    # Clears caches to disable feature
+    File::delete("#{Configuration::get.app_cache_directory}/#{Services::CACHE_KEY_DISKS}.cache") rescue nil
   end
 
   def test_json_service_should_set_response_headers_when_origin_request_header_set
