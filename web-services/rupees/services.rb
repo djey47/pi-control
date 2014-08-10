@@ -34,9 +34,11 @@ class Services
 
   #Cache keys (diskcached)
   CACHE_KEY_DISKS = 'DISKS'
+  CACHE_KEY_SMART_PREFIX = 'SMART_'
 
   #Cache parameters
-  CACHE_EXPIRY_DISKS = 3600
+  CACHE_EXPIRY_DISKS_SECS = 3600
+  CACHE_EXPIRY_SMART_SECS = 30
 
   def initialize(system_gateway)
 
@@ -46,7 +48,8 @@ class Services
     @logger.level = Logger::INFO
 
     # Caching
-    @disks_cache = Diskcached.new(Configuration::get.app_cache_directory, CACHE_EXPIRY_DISKS)
+    @disks_cache = Diskcached.new(Configuration::get.app_cache_directory, CACHE_EXPIRY_DISKS_SECS)
+    @smart_cache = Diskcached.new(Configuration::get.app_cache_directory, CACHE_EXPIRY_SMART_SECS)
   end
 
   def esxi_off
@@ -294,8 +297,16 @@ class Services
     end
   end
 
+  # Cached
   def get_smart(disk_id)
-    @logger.info('[Services][disk_smart.json]')
+    @logger.info('[Services][disk_smart.json] Requesting cache...')
+
+    @smart_cache.cache("#{CACHE_KEY_SMART_PREFIX}#{disk_id}") do
+      @logger.info('[Services][disk_smart.json] Cache miss!')
+      get_smart_uncached(disk_id)
+    end
+  end
+  def get_smart_uncached(disk_id)
 
     validate_disk_id(disk_id)
 

@@ -6,6 +6,7 @@ ENV['RACK_ENV'] = 'test'
 require 'json'
 require 'rack/test'
 require 'test/unit'
+require_relative 'utils/caching_helper'
 require_relative 'utils/system_gateway_mock'
 require_relative '../rupees/services'
 require_relative '../rupees/controller'
@@ -25,7 +26,7 @@ class ControllerTest < Test::Unit::TestCase
     @json_parser_opts = {:symbolize_names => true}
 
     # Clears caches to disable feature
-    File::delete("#{Configuration::get.app_cache_directory}/#{Services::CACHE_KEY_DISKS}.cache") rescue nil
+    CachingHelper::clear_caches
   end
 
   def test_json_service_should_set_response_headers_when_origin_request_header_set
