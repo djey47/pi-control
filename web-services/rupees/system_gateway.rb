@@ -5,6 +5,10 @@ require 'cronedit'
 require_relative 'model/ssh_error'
 
 class SystemGateway
+
+  # BatchMode keeps it from hanging with Host unknown, YES to add to known_hosts, and StrictHostKeyChecking adds the fingerprint automatically.
+  SSH_OPTIONS = '-o BatchMode=yes -o StrictHostKeyChecking=no'
+
   def initialize
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
@@ -12,7 +16,7 @@ class SystemGateway
 
   # Executes given command via SSH onto specified host
   def ssh(host, user_name, command)
-    cmd = "ssh #{user_name}@#{host} #{command}"
+    cmd = "ssh #{SSH_OPTIONS} #{user_name}@#{host} #{command}"
     @logger.info("[SystemGateway][ssh] Executing #{cmd}...")
     out = `#{cmd}`
 
