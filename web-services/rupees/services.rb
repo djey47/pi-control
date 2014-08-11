@@ -310,20 +310,12 @@ class Services
 
     validate_disk_id(disk_id)
 
-    host_name = Configuration::get.esxi_host_name
-    user = Configuration::get.esxi_user
-
-    # Gets technical id from simple id
-    tech_id = nil
-    get_disks.each do |disk|
-      if disk.id == disk_id.to_i
-        tech_id = disk.tech_id
-        break
-      end
-    end
+    tech_id = get_disk_tech_id(disk_id)
 
     unless tech_id.nil?
       # Requests SMART data
+      host_name = Configuration::get.esxi_host_name
+      user = Configuration::get.esxi_user
       out = @system_gateway.ssh(host_name, user, "esxcli --formatter=csv storage core device smart get -d #{tech_id}")
 
       items = CSVToHashes::convert(out).map.with_index { |item, index |
@@ -351,6 +343,26 @@ class Services
     raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")
   end
 
+  def get_smart_multi(disk_ids)
+    @logger.info('[Services][disks_smart.json]')
+
+    tech_ids = disk_ids.map { |id|
+      get_disk_tech_id(id)
+    }
+
+    cmds = ''
+    tech_ids.each_with_index do |tech_id, index|
+      cmds << "esxcli --formatter=csv storage core device smart get -d #{tech_id}"
+      cmds << ';' if index < tech_ids.size - 1
+    end
+
+    # Requests SMART data
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+    out = @system_gateway.ssh(host_name, user, cmds)
+
+  end
+
   private
   #Utilities
   def parse_cron_entry(entry)
@@ -359,6 +371,17 @@ class Services
     hours = items[1].rjust(2, '0')
     minutes = items[0].rjust(2, '0')
     "#{hours}:#{minutes}"
+  end
+
+  def get_disk_tech_id(disk_id)
+    # Gets technical id from simple id
+    tech_id = nil
+    get_disks.each do |disk|
+      if disk.id == disk_id.to_i
+        tech_id = disk.tech_id
+        break
+      end
+    end  
   end
 
   #Input validators
