@@ -316,4 +316,23 @@ class Controller < Sinatra::Base
       500
     end
   end
+
+  #Returns list of smart details about given disks
+  get '/control/esxi/disks/:disk_ids/smart.json' do |disk_ids|
+    begin
+      @big_brother.info("IP #{request.ip} has just requested SMART details of disks ##{disk_ids}.")
+
+      # Converts parameter to list
+      id_list = []
+      disk_ids.split(',').each do |id|
+        id_list << id
+      end
+
+      handle_headers_for_json
+      [200,
+          {:smart => @services.get_smart_multi(id_list)}.to_json
+      ]
+    end
+  end
+
 end
