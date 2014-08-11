@@ -6,6 +6,7 @@ require_relative 'controller'
 require_relative 'common/configuration'
 require_relative 'model/disk'
 require_relative 'model/disk_smart'
+require_relative 'model/disk_smart_multi'
 require_relative 'model/smart_item'
 require_relative 'model/virtual_machine'
 require_relative 'model/schedule_status'
@@ -318,26 +319,7 @@ class Services
       user = Configuration::get.esxi_user
       out = @system_gateway.ssh(host_name, user, "esxcli --formatter=csv storage core device smart get -d #{tech_id}")
 
-      items = CSVToHashes::convert(out).map.with_index { |item, index |
-
-        label = item['Parameter']
-        value = item['Value']
-        threshold = item['Threshold']
-        worst = item['Worst']
-        status = SMARTStatusHelper::get_status(label, value, worst, threshold)
-
-        SmartItem.new(
-          index + 1,
-          label,
-          value,
-          worst,
-          threshold,
-          status)
-      }
-
-      global_status = SMARTStatusHelper.get_global_status(items)
-
-      return DiskSmart.new(global_status, items)
+      return parse_disk_smart(out)
     end
 
     raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")
@@ -346,21 +328,16 @@ class Services
   def get_smart_multi(disk_ids)
     @logger.info('[Services][disks_smart.json]')
 
-    tech_ids = disk_ids.map { |id|
-      get_disk_tech_id(id)
-    }
+    tech_ids = disk_ids.map { |id| get_disk_tech_id(id) }
 
-    cmds = ''
-    tech_ids.each_with_index do |tech_id, index|
-      cmds << "esxcli --formatter=csv storage core device smart get -d #{tech_id}"
-      cmds << ';' if index < tech_ids.size - 1
-    end
+    cmds = tech_ids.map { |tech_id| "esxcli --formatter=csv storage core device smart get -d #{tech_id}" }
 
     # Requests SMART data
     host_name = Configuration::get.esxi_host_name
     user = Configuration::get.esxi_user
-    out = @system_gateway.ssh(host_name, user, cmds)
+    out = @system_gateway.ssh(host_name, user, *cmds)
 
+    out.split("\n-\n").map.with_index { |item,index| DiskSmartMulti.new(disk_ids[index], parse_disk_smart(item)) }
   end
 
   private
@@ -381,6 +358,29 @@ class Services
       end
     end
     nil
+  end
+
+  def parse_disk_smart(esxi_response)
+    items = CSVToHashes::convert(esxi_response).map.with_index { |item, index |
+
+      label = item['Parameter']
+      value = item['Value']
+      threshold = item['Threshold']
+      worst = item['Worst']
+      status = SMARTStatusHelper::get_status(label, value, worst, threshold)
+
+      SmartItem.new(
+          index + 1,
+          label,
+          value,
+          worst,
+          threshold,
+          status)
+    }
+
+    global_status = SMARTStatusHelper.get_global_status(items)
+
+    DiskSmart.new(global_status, items)
   end
 
   #Input validators

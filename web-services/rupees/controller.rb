@@ -323,14 +323,11 @@ class Controller < Sinatra::Base
       @big_brother.info("IP #{request.ip} has just requested SMART details of disks ##{disk_ids}.")
 
       # Converts parameter to list
-      id_list = []
-      disk_ids.split(',').each do |id|
-        id_list << id
-      end
+      id_list = disk_ids.split(',').map { |disk_id| disk_id }
 
       handle_headers_for_json
       [200,
-          {:smart => @services.get_smart_multi(id_list)}.to_json
+          {:disks_smart => @services.get_smart_multi(id_list)}.to_json
       ]
     end
   end
