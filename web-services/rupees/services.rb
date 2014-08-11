@@ -375,13 +375,12 @@ class Services
 
   def get_disk_tech_id(disk_id)
     # Gets technical id from simple id
-    tech_id = nil
     get_disks.each do |disk|
       if disk.id == disk_id.to_i
-        tech_id = disk.tech_id
-        break
+        return disk.tech_id
       end
-    end  
+    end
+    nil
   end
 
   #Input validators
