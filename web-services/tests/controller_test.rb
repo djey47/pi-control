@@ -313,25 +313,26 @@ class ControllerTest < Test::Unit::TestCase
 
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
-    assert(parsed_object[:disks_smart][:items].is_a? Array)
-    assert_equal(2, parsed_object[:disks_smart][:items].size)
+    assert(parsed_object[:disks_smart].is_a? Array)
+    assert_equal(2, parsed_object[:disks_smart].size)
 
-    disk_item2 = parsed_object[:disks_smart][:items][1]
-    assert_equal('<WIP>', disk_item2[:smart][:i_status])
-    assert(disk_item2[:smart][:items].is_a? Array)
-    assert_equal(13, disk_item2[:smart][:items].size)
-    item1 = disk_item2[:smart][:items][0]
+    disk_item2 = parsed_object[:disks_smart][1]
+    assert_equal('2', disk_item2[:disk_id])
+    assert_equal('<WIP>', disk_item2[:disk_smart][:i_status])
+    assert(disk_item2[:disk_smart][:items].is_a? Array)
+    assert_equal(13, disk_item2[:disk_smart][:items].size)
+    item1 = disk_item2[:disk_smart][:items][0]
     assert_equal(1, item1[:id])
     assert_equal('Health Status', item1[:label])
     assert_equal('OK', item1[:value])
     assert_equal('N/A', item1[:threshold])
     assert_equal('N/A', item1[:worst])
     assert_equal('OK', item1[:status])
-    item2 = disk_item2[:smart][:items][1]
+    item2 = disk_item2[:disk_smart][:items][1]
     assert_equal(2, item2[:id])
-    item3 = disk_item2[:smart][:items][2]
+    item3 = disk_item2[:disk_smart][:items][2]
     assert_equal(3, item3[:id])
-    item4 = disk_item2[:smart][:items][3]
+    item4 = disk_item2[:disk_smart][:items][3]
     assert_equal(4, item4[:id])
   end
 end
