@@ -1,4 +1,4 @@
-# disk_smart.rb - reprsents SMART details about one disk
+# disk_smart.rb - represents SMART details about one disk
 
 require 'json'
 
