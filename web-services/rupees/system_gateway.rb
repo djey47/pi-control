@@ -14,11 +14,11 @@ class SystemGateway
     @logger.level = Logger::INFO
   end
 
-  # Executes given command via SSH onto specified host
-  def ssh(host, user_name, command)
-    cmd = "ssh #{SSH_OPTIONS} #{user_name}@#{host} #{command}"
-    @logger.info("[SystemGateway][ssh] Executing #{cmd}...")
-    out = `#{cmd}`
+  # Executes given commands via SSH onto specified host
+  def ssh(host, user_name, *commands)
+    global_cmd = "ssh #{SSH_OPTIONS} #{user_name}@#{host} \"#{commands.join(';')}\""
+    @logger.info("[SystemGateway][ssh] Executing #{global_cmd}...")
+    out = `#{global_cmd}`
 
     # SSH command failures (host unreachable, authentication errors)
     if $?.to_i != 0
