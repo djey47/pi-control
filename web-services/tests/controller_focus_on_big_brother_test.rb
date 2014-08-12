@@ -21,8 +21,6 @@ class ControllerFocusOnBigBrotherTest < Test::Unit::TestCase
     @json_parser_opts = {:symbolize_names => true}
 
     @big_brother_file_name = Controller::BIG_BROTHER_LOG_FILE_NAME
-    # Can only be deleted on first time
-    File::delete(@big_brother_file_name) rescue nil
   end
 
   def test_esxi_on_should_tell_big_brother
@@ -89,11 +87,16 @@ class ControllerFocusOnBigBrotherTest < Test::Unit::TestCase
     assert_big_brother('/control/esxi/disk/2/smart.json', ' has just requested SMART details of disk #2.')
   end
 
+  def test_esxi_disks_smart_multi_should_tell_big_brother
+    assert_big_brother('/control/esxi/disks/1,2/smart.json', ' has just requested SMART details of disks #1,2.')
+  end
+
   #Utilities
+  private
   def assert_big_brother(path, *included_expressions)
     big_brother_prev_contents = File.new(@big_brother_file_name).readlines
 
-    get path
+    get(path)
 
     assert(File.exists?(@big_brother_file_name))
 
