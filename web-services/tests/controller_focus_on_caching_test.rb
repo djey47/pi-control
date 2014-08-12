@@ -23,7 +23,6 @@ class ControllerFocusOnCachingTest < Test::Unit::TestCase
   def setup
     @system_gateway = SystemGatewayMock.new
 
-    # Clears caches to disable feature
     CachingHelper::clear_caches
   end
 
