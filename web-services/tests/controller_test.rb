@@ -335,4 +335,31 @@ class ControllerTest < Test::Unit::TestCase
     item4 = disk_item2[:disk_smart][:items][3]
     assert_equal(4, item4[:id])
   end
+
+  def test_esxi_disks_smart_multi_and_invalid_disk_list_should_return_http_400
+    # Case 1: wrong separator
+    get '/control/esxi/disks/1;2/smart.json'
+
+    assert_equal(400, last_response.status)
+
+    # Case 2: wrong id format
+    get '/control/esxi/disks/1,a/smart.json'
+
+    assert_equal(400, last_response.status)    # Case 2: wrong id format
+
+    # Case 3: missing value (middle)
+    get '/control/esxi/disks/1,,3/smart.json'
+
+    assert_equal(400, last_response.status)
+    
+    # Case 4: missing value (end)
+    get '/control/esxi/disks/1,2,/smart.json'
+
+    assert_equal(400, last_response.status)    # Case 4: missing value
+
+    # Case 5: missing value (start)
+    get '/control/esxi/disks/,2/smart.json'
+
+    assert_equal(400, last_response.status)
+  end
 end

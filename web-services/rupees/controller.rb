@@ -51,6 +51,14 @@ class Controller < Sinatra::Base
     content_type :json
   end
 
+  #Input validators
+  def validate_parse_disk_ids(disk_ids)
+    #Format : id1,id2,...
+    raise(InvalidArgumentError.new, "Invalid disks parameter: #{disk_ids}") unless /^\d+(,?\d+)*$/ =~ disk_ids
+
+    disk_ids.split(',').map { |disk_id| disk_id }
+  end
+
   public
   #config
   set :port, Configuration::get.app_server_port
@@ -322,13 +330,16 @@ class Controller < Sinatra::Base
     begin
       @big_brother.info("IP #{request.ip} has just requested SMART details of disks ##{disk_ids}.")
 
-      # Converts parameter to list
-      id_list = disk_ids.split(',').map { |disk_id| disk_id }
+      # Checks then converts parameter to list
+      id_list = validate_parse_disk_ids(disk_ids)
 
       handle_headers_for_json
       [200,
           {:disks_smart => @services.get_smart_multi(id_list)}.to_json
       ]
+    rescue InvalidArgumentError => err
+      @logger.error("[Controller][disks_smart.json] #{err.inspect}")
+      400
     end
   end
 
