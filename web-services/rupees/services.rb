@@ -313,16 +313,12 @@ class Services
 
     tech_id = get_disk_tech_id(disk_id)
 
-    unless tech_id.nil?
-      # Requests SMART data
-      host_name = Configuration::get.esxi_host_name
-      user = Configuration::get.esxi_user
-      out = @system_gateway.ssh(host_name, user, "esxcli --formatter=csv storage core device smart get -d #{tech_id}")
+    # Requests SMART data
+    host_name = Configuration::get.esxi_host_name
+    user = Configuration::get.esxi_user
+    out = @system_gateway.ssh(host_name, user, "esxcli --formatter=csv storage core device smart get -d #{tech_id}")
 
-      return parse_disk_smart(out)
-    end
-
-    raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")
+    parse_disk_smart(out)
   end
 
   def get_smart_multi(disk_ids)
@@ -376,7 +372,8 @@ class Services
         return disk.tech_id
       end
     end
-    nil
+
+    raise(DiskNotFoundError.new, "Invalid disk id=#{disk_id}")
   end
 
   def parse_disk_smart(esxi_response)

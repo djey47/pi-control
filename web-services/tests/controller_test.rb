@@ -289,23 +289,8 @@ class ControllerTest < Test::Unit::TestCase
 
     assert_equal(200, last_response.status)
     parsed_object = JSON.parse(last_response.body, @json_parser_opts)
-    assert_equal('<WIP>', parsed_object[:smart][:i_status])
-    assert(parsed_object[:smart][:items].is_a? Array)
-    assert_equal(13, parsed_object[:smart][:items].size)
 
-    item1 = parsed_object[:smart][:items][0]
-    assert_equal(1, item1[:id])
-    assert_equal('Health Status', item1[:label])
-    assert_equal('OK', item1[:value])
-    assert_equal('N/A', item1[:threshold])
-    assert_equal('N/A', item1[:worst])
-    assert_equal('OK', item1[:status])
-    item2 = parsed_object[:smart][:items][1]
-    assert_equal(2, item2[:id])
-    item3 = parsed_object[:smart][:items][2]
-    assert_equal(3, item3[:id])
-    item4 = parsed_object[:smart][:items][3]
-    assert_equal(4, item4[:id])
+    assert_smart_info(parsed_object[:smart])
   end
 
   def test_esxi_disks_smart_multi_should_return_json_and_http_200
@@ -318,22 +303,8 @@ class ControllerTest < Test::Unit::TestCase
 
     disk_item2 = parsed_object[:disks_smart][1]
     assert_equal('2', disk_item2[:disk_id])
-    assert_equal('<WIP>', disk_item2[:disk_smart][:i_status])
-    assert(disk_item2[:disk_smart][:items].is_a? Array)
-    assert_equal(13, disk_item2[:disk_smart][:items].size)
-    item1 = disk_item2[:disk_smart][:items][0]
-    assert_equal(1, item1[:id])
-    assert_equal('Health Status', item1[:label])
-    assert_equal('OK', item1[:value])
-    assert_equal('N/A', item1[:threshold])
-    assert_equal('N/A', item1[:worst])
-    assert_equal('OK', item1[:status])
-    item2 = disk_item2[:disk_smart][:items][1]
-    assert_equal(2, item2[:id])
-    item3 = disk_item2[:disk_smart][:items][2]
-    assert_equal(3, item3[:id])
-    item4 = disk_item2[:disk_smart][:items][3]
-    assert_equal(4, item4[:id])
+
+    assert_smart_info(disk_item2[:disk_smart])
   end
 
   def test_esxi_disks_smart_multi_and_invalid_disk_list_should_return_http_400
@@ -362,4 +333,33 @@ class ControllerTest < Test::Unit::TestCase
 
     assert_equal(400, last_response.status)
   end
+
+  def test_esxi_disks_smart_multi_and_one_unknown_disk_id_should_return_http_404
+    get '/control/esxi/disks/1,2,345/smart.json'
+
+    assert_equal(404, last_response.status)
+  end
+
+  # Utilities
+  private
+  def assert_smart_info(smart_info)
+    assert_equal('<WIP>', smart_info[:i_status])
+    assert(smart_info[:items].is_a? Array)
+    assert_equal(13, smart_info[:items].size)
+
+    item1 = smart_info[:items][0]
+    assert_equal(1, item1[:id])
+
+    assert_equal('Health Status', item1[:label])
+    assert_equal('OK', item1[:value])
+    assert_equal('N/A', item1[:threshold])
+    assert_equal('N/A', item1[:worst])
+    assert_equal('OK', item1[:status])
+    item2 = smart_info[:items][1]
+    assert_equal(2, item2[:id])
+    item3 = smart_info[:items][2]
+    assert_equal(3, item3[:id])
+    item4 = smart_info[:items][3]
+    assert_equal(4, item4[:id])
+  end    
 end

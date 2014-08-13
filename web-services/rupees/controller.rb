@@ -340,6 +340,12 @@ class Controller < Sinatra::Base
     rescue InvalidArgumentError => err
       @logger.error("[Controller][disks_smart.json] #{err.inspect}")
       400
+    rescue DiskNotFoundError => err
+      @logger.error("[Controller][disks_smart.json] #{err.inspect}")
+      404
+    rescue => exception
+      @logger.error("[Controller][disk_smart.json] #{exception.inspect}")
+      500
     end
   end
 
