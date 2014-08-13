@@ -74,4 +74,24 @@ class ControllerFocusOnCachingTest < Test::Unit::TestCase
     assert_equal(200, last_response.status)
     assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end
+
+  def test_esxi_disks_smart_multi_should_call_gateway_first_then_cache
+    # First call: cache miss
+    get '/control/esxi/disks/1,2/smart.json'
+
+    assert_equal(200, last_response.status)
+    assert_true(@system_gateway.called?, 'Unproper call to system gateway')
+
+    # Second call: cache hit
+    get '/control/esxi/disks/1,2/smart.json'
+
+    assert_equal(200, last_response.status)
+    assert_false(@system_gateway.called?, 'Should use cache instead of calling system gateway')
+
+    # Third call on single service : cache hit
+    get '/control/esxi/disk/2/smart.json'
+
+    assert_equal(200, last_response.status)
+    assert_false(@system_gateway.called?, 'Should use cache instead of calling system gateway')
+  end
 end

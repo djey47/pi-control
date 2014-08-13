@@ -326,7 +326,15 @@ class Services
   end
 
   def get_smart_multi(disk_ids)
-    @logger.info('[Services][disks_smart.json]')
+    @logger.info('[Services][disks_smart.json] Requesting cache...')
+
+    cache_key_suffix = disk_ids.join('-')
+    @smart_cache.cache("#{CACHE_KEY_SMART_PREFIX}#{cache_key_suffix}") do
+      @logger.info('[Services][disks_smart.json] Cache miss!')
+      get_smart_multi_uncached(disk_ids)
+    end
+  end
+  def get_smart_multi_uncached(disk_ids)
 
     tech_ids = disk_ids.map { |id| get_disk_tech_id(id) }
 
@@ -337,7 +345,18 @@ class Services
     user = Configuration::get.esxi_user
     out = @system_gateway.ssh(host_name, user, *cmds)
 
-    out.split("\n-\n").map.with_index { |item,index| DiskSmartMulti.new(disk_ids[index], parse_disk_smart(item)) }
+    to_return = []
+    out.split("\n-\n").each_with_index do |item,index|
+      disk_id = disk_ids[index]
+      result = parse_disk_smart(item)
+
+      # Updates corresponding single cache
+      @smart_cache.set("#{CACHE_KEY_SMART_PREFIX}#{disk_id}", result)
+
+      # Builds returned value
+      to_return << DiskSmartMulti.new(disk_id, result)
+    end
+    to_return
   end
 
   private
