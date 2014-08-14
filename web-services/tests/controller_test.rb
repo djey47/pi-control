@@ -301,10 +301,10 @@ class ControllerTest < Test::Unit::TestCase
     assert(parsed_object[:disks_smart].is_a? Array)
     assert_equal(2, parsed_object[:disks_smart].size)
 
-    disk_item2 = parsed_object[:disks_smart][1]
-    assert_equal('2', disk_item2[:disk_id])
+    disk2 = parsed_object[:disks_smart][1]
+    assert_equal('2', disk2[:disk_id])
 
-    assert_smart_info(disk_item2[:disk_smart])
+    assert_smart_info(disk2[:smart])
   end
 
   def test_esxi_disks_smart_multi_and_invalid_disk_list_should_return_http_400

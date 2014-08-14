@@ -5,17 +5,17 @@ require 'json'
 class DiskSmartMulti
 
   attr_reader :disk_id
-  attr_reader :disk_smart
+  attr_reader :smart
 
-  def initialize(disk_id, disk_smart)
+  def initialize(disk_id, smart)
     @disk_id = disk_id
-    @disk_smart = disk_smart
+    @smart = smart
   end
 
   def to_json(*a)
     {
         :disk_id => @disk_id,
-        :disk_smart => @disk_smart
+        :smart => @smart
     }.to_json(*a)
     end
 end
