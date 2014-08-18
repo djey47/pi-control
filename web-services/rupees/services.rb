@@ -200,7 +200,7 @@ class Services
     on_entry = entries[CRONTAB_ID_ON]
     off_entry = entries[CRONTAB_ID_OFF]
 
-    return ScheduleStatus.new(nil, nil) if on_entry.nil? or off_entry.nil?
+    return ScheduleStatus.new if on_entry.nil? or off_entry.nil?
 
     on_time = parse_cron_entry(on_entry)
     off_time = parse_cron_entry(off_entry)
