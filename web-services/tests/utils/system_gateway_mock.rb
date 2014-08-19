@@ -78,11 +78,11 @@ class SystemGatewayMock
   end
 
   def crontab_add(id, entry)
-    raise 'Wrong task id' if id != Services::CRONTAB_ID_ON and id != Services::CRONTAB_ID_OFF
+    raise 'Wrong task id' unless id == 'ESXI_ON' or id == 'ESXI_OFF'
     raise 'Undefined cron entry' if entry.nil?
     raise 'Undefined cron entry hour' if entry[:hour].nil?
     raise 'Undefined cron entry minute' if entry[:minute].nil?
-    raise 'Undefined cron entry command' if entry[:command] != Services::CRONTAB_CMD_ON and entry[:command] != Services::CRONTAB_CMD_OFF
+    raise 'Undefined cron entry command' unless entry[:command] != Services::CRONTAB_CMD_ON or entry[:command] != Services::CRONTAB_CMD_OFF
     @verify = true
   end
 
