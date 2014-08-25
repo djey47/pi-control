@@ -6,7 +6,7 @@ Set of web-services to control/monitor ESXi hypervisor from a linux-based, alway
 Featuring [complete API](https://github.com/djey47/pi-control/wiki/API-reference): 
 - hypervisor ON/OFF switch + schedule + status
 - hard disk list
-- SMART details of particular disk
+- SMART details of particular disk(s)
 - virtual machine list
 - virtual machine ON/OFF switch + status
 - global logging to watch all received service requests (big brother).
