@@ -47,12 +47,4 @@ Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-co
 How to use:
 -----------
 
-<<<<<<< HEAD
 Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-use%3F)
-=======
-<<<<<<< HEAD
-Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-use%3F)
-=======
-Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-use%3F)
->>>>>>> [] Enhanced documentation
->>>>>>> [] Enhanced documentation
