@@ -5,9 +5,11 @@ Set of web-services to control/monitor ESXi hypervisor from a linux-based, alway
 
 Featuring [complete API](https://github.com/djey47/pi-control/wiki/API-reference): 
 - hypervisor ON/OFF switch + schedule + status
-- hard disk list + SMART details of particular disk
+- hard disk list
+- SMART details of particular disk
 - virtual machine list
-- virtual machine ON/OFF switch + status.
+- virtual machine ON/OFF switch + status
+- global logging to watch all received service requests (big brother).
 
 Monitoring usage example from web client can be found at following project : [smartX](https://github.com/djey47/smartX)
 
@@ -35,14 +37,14 @@ see **./web-services/Gemfile**
 How to install?
 ---------------
 
-Please have a look at wiki: https://github.com/djey47/pi-control/wiki/How-to-install%3F
+Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-install%3F)
 
 Configuration:
 --------------
 
-Please have a look at wiki: https://github.com/djey47/pi-control/wiki/How-to-configure%3F
+Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-configure%3F)
 
 How to use:
 -----------
 
-Please have a look at wiki: https://github.com/djey47/pi-control/wiki/How-to-use%3F
+Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-use%3F)
