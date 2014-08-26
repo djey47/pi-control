@@ -343,7 +343,7 @@ class ControllerTest < Test::Unit::TestCase
   # Utilities
   private
   def assert_smart_info(smart_info)
-    assert_equal('<WIP>', smart_info[:i_status])
+    assert_equal('OK', smart_info[:i_status])
     assert(smart_info[:items].is_a? Array)
     assert_equal(13, smart_info[:items].size)
 

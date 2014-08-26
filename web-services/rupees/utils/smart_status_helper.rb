@@ -31,7 +31,13 @@ module SMARTStatusHelper
   end
 
   def self.get_global_status(items)
-    '<WIP>'
+    return :KO if(at_least_one?(:KO, items))
+
+    return :WARN if(at_least_one?(:WARN, items))
+
+    return :OK if(at_least_one?(:OK, items))
+
+    :UNAVAIL
   end
 
   private
@@ -43,5 +49,13 @@ module SMARTStatusHelper
     return :OK if v > t
     return :KO if v <= t
     #return :WARN if w <= t #FIXME
+  end
+
+  def self.at_least_one?(status, items)
+    items.each do |item|
+      return true if item.status == status 
+    end
+
+    false
   end
 end
