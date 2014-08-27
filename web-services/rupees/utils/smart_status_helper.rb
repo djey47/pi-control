@@ -16,12 +16,14 @@ module SMARTStatusHelper
 
     case label
       when ParameterEnum::HEALTH_STATUS
-        return :OK if value == VALUE_OK
-        return :KO if value == VALUE_KO
+        return get_health_status_status(value, worst, threshold)
 
       when ParameterEnum::MEDIA_WEAROUT_INDICATOR #TODO usable ?
+        return :UNAVAIL
 
-      when ParameterEnum::WRITE_ERROR_COUNT #Not always handled
+      when ParameterEnum::WRITE_ERROR_COUNT
+        return get_error_count_status(value, worst, threshold)
+        
       when ParameterEnum::READ_ERROR_COUNT
         return get_error_count_status(value, worst, threshold)
 
@@ -46,9 +48,15 @@ module SMARTStatusHelper
     t = threshold.to_i
     w = worst.to_i
 
+    return :KO if v < t
+    return :WARN if w <= t
     return :OK if v > t
-    return :KO if v <= t
-    #return :WARN if w <= t #FIXME
+  end
+
+  def self.get_health_status_status(value, worst, threshold)
+      return :OK if value == VALUE_OK
+      return :KO if value == VALUE_KO
+      return :UNAVAIL
   end
 
   def self.at_least_one?(status, items)
