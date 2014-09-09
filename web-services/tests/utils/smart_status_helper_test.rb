@@ -38,6 +38,21 @@ class SMARTStatusHelperTest < Test::Unit::TestCase
 		assert_equal(:OK, SMARTStatusHelper.get_status('Write Error Count', '300', '250', '200'))
 	end	
 
+	def test_get_status_media_wearout_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Media Wearout Indicator', '1', '0', '0'))
+	end	
+
+	def test_get_status_media_wearout_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Media Wearout Indicator', '5', '0', '0'))
+	end
+
+	def test_get_status_media_wearout_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Media Wearout Indicator', '75', '0', '0'))
+	end	
+
 	def test_get_global_status_one_item_KO
 		#given
 		items = []

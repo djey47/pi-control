@@ -18,8 +18,8 @@ module SMARTStatusHelper
       when ParameterEnum::HEALTH_STATUS
         return get_health_status_status(value, worst, threshold)
 
-      when ParameterEnum::MEDIA_WEAROUT_INDICATOR #TODO usable ?
-        return :UNAVAIL
+      when ParameterEnum::MEDIA_WEAROUT_INDICATOR
+        return get_media_wearout_status(value)
 
       when ParameterEnum::WRITE_ERROR_COUNT
         return get_error_count_status(value, worst, threshold)
@@ -57,6 +57,13 @@ module SMARTStatusHelper
       return :OK if value == VALUE_OK
       return :KO if value == VALUE_KO
       return :UNAVAIL
+  end
+
+  def self.get_media_wearout_status(value)
+      # return :OK if value == VALUE_OK
+      return :KO if value == '1'
+      return :WARN if (2..10) === value.to_i
+      return :OK if value.to_i > 10
   end
 
   def self.at_least_one?(status, items)
