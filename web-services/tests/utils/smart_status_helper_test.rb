@@ -78,6 +78,21 @@ class SMARTStatusHelperTest < Test::Unit::TestCase
 		assert_equal(:OK, SMARTStatusHelper.get_status('Power Cycle Count', '50', '25', '20'))
 	end	
 
+	def test_get_status_reallocated_sector_count_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Reallocated Sector Count', '15', '15', '36'))
+	end	
+
+	def test_get_status_reallocated_sector_count_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Reallocated Sector Count', '45', '25', '36'))
+	end
+
+	def test_get_status_reallocated_sector_count_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Reallocated Sector Count', '50', '40', '36'))
+	end		
+
 	def test_get_global_status_one_item_KO
 		#given
 		items = []

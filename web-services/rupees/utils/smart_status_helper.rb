@@ -33,6 +33,9 @@ module SMARTStatusHelper
       when ParameterEnum::POWER_CYCLE_COUNT
         return get_power_cycle_count_status(value, worst, threshold)
 
+      when ParameterEnum::REALLOCATED_SECTOR_COUNT
+        return get_reallocated_sector_count_status(value, worst, threshold)
+
       else
         return :UNAVAIL
     end
@@ -81,6 +84,10 @@ module SMARTStatusHelper
   end
 
   def self.get_power_cycle_count_status(value, worst, threshold)
+    get_basic_status(value, worst, threshold)
+  end
+  
+  def self.get_reallocated_sector_count_status(value, worst, threshold)
     get_basic_status(value, worst, threshold)
   end
 
