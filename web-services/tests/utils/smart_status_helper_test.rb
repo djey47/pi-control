@@ -51,6 +51,16 @@ class SMARTStatusHelperTest < Test::Unit::TestCase
 	def test_get_status_media_wearout_OK
 		#given-when-then
 		assert_equal(:OK, SMARTStatusHelper.get_status('Media Wearout Indicator', '75', '0', '0'))
+	end		
+
+	def test_get_status_power_on_hours_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Power-on Hours', '0', '0', '0'))
+	end	
+
+	def test_get_status_power_on_hours_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Power-on Hours', '75', '75', '0'))
 	end	
 
 	def test_get_global_status_one_item_KO

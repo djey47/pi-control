@@ -27,6 +27,9 @@ module SMARTStatusHelper
       when ParameterEnum::READ_ERROR_COUNT
         return get_error_count_status(value, worst, threshold)
 
+      when ParameterEnum::POWER_ON_HOURS
+        return get_power_on_hours_status(value, threshold)
+
       else
         return :UNAVAIL
     end
@@ -60,10 +63,14 @@ module SMARTStatusHelper
   end
 
   def self.get_media_wearout_status(value)
-      # return :OK if value == VALUE_OK
       return :KO if value == '1'
       return :WARN if (2..10) === value.to_i
       return :OK if value.to_i > 10
+  end
+
+  def self.get_power_on_hours_status(value, threshold)
+      return :KO if value == threshold
+      return :OK
   end
 
   def self.at_least_one?(status, items)
