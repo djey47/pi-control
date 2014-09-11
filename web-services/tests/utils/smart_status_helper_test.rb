@@ -93,6 +93,51 @@ class SMARTStatusHelperTest < Test::Unit::TestCase
 		assert_equal(:OK, SMARTStatusHelper.get_status('Reallocated Sector Count', '50', '40', '36'))
 	end		
 
+	def test_get_status_raw_read_error_rate_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Raw Read Error Rate', '5', '5', '6'))
+	end	
+
+	def test_get_status_raw_read_error_rate_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Raw Read Error Rate', '10', '6', '6'))
+	end
+
+	def test_get_status_raw_read_error_rate_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Raw Read Error Rate', '20', '8', '6'))
+	end	
+
+	def test_get_status_drive_temperature_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Drive Temperature', '0', '0', '1'))
+	end	
+
+	def test_get_status_drive_temperature_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Drive Temperature', '10', '1', '1'))
+	end
+
+	def test_get_status_drive_temperature_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Drive Temperature', '20', '10', '1'))
+	end	
+
+	def test_get_status_driver_rated_max_temperature_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Driver Rated Max Temperature', '40', '40', '45'))
+	end	
+
+	def test_get_status_driver_rated_max_temperature_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Driver Rated Max Temperature', '64', '45', '45'))
+	end
+
+	def test_get_status_driver_rated_max_temperature_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Driver Rated Max Temperature', '64', '58', '45'))
+	end
+
 	def test_get_global_status_one_item_KO
 		#given
 		items = []

@@ -36,6 +36,15 @@ module SMARTStatusHelper
       when ParameterEnum::REALLOCATED_SECTOR_COUNT
         return get_reallocated_sector_count_status(value, worst, threshold)
 
+      when ParameterEnum::RAW_READ_ERROR_RATE
+        return get_raw_read_error_rate_status(value, worst, threshold)
+
+      when ParameterEnum::DRIVE_TEMPERATURE
+        return get_drive_temperature_status(value, worst, threshold)
+
+      when ParameterEnum::DRIVER_RATED_MAX_TEMPERATURE
+        return get_driver_rated_max_temperature_status(value, worst, threshold)        
+
       else
         return :UNAVAIL
     end
@@ -88,6 +97,18 @@ module SMARTStatusHelper
   end
   
   def self.get_reallocated_sector_count_status(value, worst, threshold)
+    get_basic_status(value, worst, threshold)
+  end
+
+  def self.get_raw_read_error_rate_status(value, worst, threshold)
+    get_basic_status(value, worst, threshold)
+  end
+
+  def self.get_drive_temperature_status(value, worst, threshold)
+    get_basic_status(value, worst, threshold)
+  end
+
+  def self.get_driver_rated_max_temperature_status(value, worst, threshold)
     get_basic_status(value, worst, threshold)
   end
 
