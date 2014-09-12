@@ -1,6 +1,6 @@
 # Main config file for pi-control
 app :
-  is-production : false
+  is-production : true
   server-port : 4601
 esxi :
   host-name : fooxi
