@@ -43,7 +43,16 @@ module SMARTStatusHelper
         return get_drive_temperature_status(value, worst, threshold)
 
       when ParameterEnum::DRIVER_RATED_MAX_TEMPERATURE
-        return get_driver_rated_max_temperature_status(value, worst, threshold)        
+        return get_driver_rated_max_temperature_status(value, worst, threshold)
+
+      when ParameterEnum::WRITE_SECTORS_TOT_COUNT
+        return get_sectors_tot_count_status(value, worst, threshold) 
+
+      when ParameterEnum::READ_SECTORS_TOT_COUNT
+        return get_sectors_tot_count_status(value, worst, threshold)
+
+      when ParameterEnum::INITIAL_BAD_BLOCK_COUNT
+        return get_sectors_initial_bad_block_count_status(value, worst, threshold)        
 
       else
         return :UNAVAIL
@@ -109,6 +118,14 @@ module SMARTStatusHelper
   end
 
   def self.get_driver_rated_max_temperature_status(value, worst, threshold)
+    get_basic_status(value, worst, threshold)
+  end
+
+  def self.get_sectors_tot_count_status(value, worst, threshold)
+    get_basic_status(value, worst, threshold)
+  end
+
+  def self.get_sectors_initial_bad_block_count_status(value, worst, threshold)
     get_basic_status(value, worst, threshold)
   end
 

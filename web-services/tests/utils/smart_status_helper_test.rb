@@ -136,6 +136,51 @@ class SMARTStatusHelperTest < Test::Unit::TestCase
 	def test_get_status_driver_rated_max_temperature_OK
 		#given-when-then
 		assert_equal(:OK, SMARTStatusHelper.get_status('Driver Rated Max Temperature', '64', '58', '45'))
+	end	
+
+	def test_get_status_write_sectors_tot_count_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Write Sectors TOT Count', '0', '0', '1'))
+	end	
+
+	def test_get_status_write_sectors_tot_count_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Write Sectors TOT Count', '10', '0', '0'))
+	end
+
+	def test_get_status_write_sectors_tot_count_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Write Sectors TOT Count', '10', '5', '0'))
+	end
+
+	def test_get_status_read_sectors_tot_count_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Read Sectors TOT Count', '0', '0', '1'))
+	end	
+
+	def test_get_status_read_sectors_tot_count_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Read Sectors TOT Count', '10', '0', '0'))
+	end
+
+	def test_get_status_read_sectors_tot_count_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Read Sectors TOT Count', '10', '5', '0'))
+	end
+
+	def test_get_status_initial_bad_block_count_KO
+		#given-when-then
+		assert_equal(:KO, SMARTStatusHelper.get_status('Initial Bad Block Count', '50', '50', '99'))
+	end	
+
+	def test_get_status_initial_bad_block_count_WARN
+		#given-when-then
+		assert_equal(:WARN, SMARTStatusHelper.get_status('Initial Bad Block Count', '100', '99', '99'))
+	end
+
+	def test_get_status_initial_bad_block_count_OK
+		#given-when-then
+		assert_equal(:OK, SMARTStatusHelper.get_status('Initial Bad Block Count', '100', '100', '99'))
 	end
 
 	def test_get_global_status_one_item_KO
