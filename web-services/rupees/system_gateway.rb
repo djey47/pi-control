@@ -1,8 +1,8 @@
 # system_gateway.rb - executes linux shell commands and applications. Acts as a wrapper, which can be overriden.
 
 require 'logger'
-require 'cronedit'
 require_relative 'model/ssh_error'
+require_relative 'utils/cronedit'
 
 class SystemGateway
 
