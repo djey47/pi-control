@@ -16,7 +16,7 @@ class SystemGateway
 
   # Executes given commands via SSH onto specified host
   def ssh(host, user_name, *commands)
-    global_cmd = "ssh #{SSH_OPTIONS} #{user_name}@#{host} \"#{commands.join(';')}\""
+    global_cmd = "ssh #{SSH_OPTIONS} #{user_name}@#{host} \"#{commands.join(';echo -;')}\""
     @logger.info("[SystemGateway][ssh] Executing #{global_cmd}...")
     out = `#{global_cmd}`
 
