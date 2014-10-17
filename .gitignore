@@ -13,6 +13,7 @@ test/version_tmp
 tmp
 web-services/logs/big_brother.log
 .idea/
+tests_results.out
 
 # YARD artifacts
 .yardoc
