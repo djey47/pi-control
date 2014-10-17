@@ -220,7 +220,6 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal('CC32', disk1[:revision])
     assert_equal(1863.0, disk1[:size_gigabytes])
     assert_equal('5YD1XA4F', disk1[:serial_no])
-    assert_equal('t10.ATA', disk1[:port])
     assert_equal('/vmfs/devices/disks/t10.ATA_____ST2000DL0032D9VT166__________________________________5YD1XA4F', disk1[:device])
     disk2 = parsed_object[:disks][1]
     assert_equal(2, disk2[:id])
@@ -236,7 +235,6 @@ class ControllerTest < Test::Unit::TestCase
     assert_equal('t10.ATA_____WDC_WD2500BEVT2D75ZCT2________________________WD2DWXH109031153', disk5[:tech_id])
     assert_equal('WD2500BEVT2D75ZCT2', disk5[:model])
     assert_equal('WD2DWXH109031153', disk5[:serial_no])
-    assert_equal('t10.ATA', disk5[:port])
 
     assert_true(@system_gateway.called?, 'Unproper call to system gateway')
   end

@@ -238,7 +238,6 @@ class Services
 
       # Extracts additional, more reliable information from ID
       complement = hd['Device'].split('_').select! { |item| item.length > 0 }
-      port = complement[0]
 
       # As hd['Model'] is incomplete
       full_model = 'N/A'
@@ -259,8 +258,7 @@ class Services
           hd['Revision'],
           size_gigabytes,
           hd['DevfsPath'],
-          serial_no,
-          port
+          serial_no
       )
     }
   end
