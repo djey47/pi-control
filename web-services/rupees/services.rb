@@ -1,9 +1,9 @@
 # services.rb - pi-control services
 
 require 'logger'
-require 'diskcached'
 require_relative 'controller'
 require_relative 'common/configuration'
+require_relative 'common/cache'
 require_relative 'model/disk'
 require_relative 'model/disk_smart'
 require_relative 'model/disk_smart_multi'
@@ -33,24 +33,12 @@ class Services
   CRONTAB_CMD_ON = "curl http://localhost:#{Configuration::get.app_server_port}/control/esxi/on"
   CRONTAB_CMD_OFF = "curl http://localhost:#{Configuration::get.app_server_port}/control/esxi/off"
 
-  #Cache keys (diskcached)
-  CACHE_KEY_DISKS = 'DISKS'
-  CACHE_KEY_SMART_PREFIX = 'SMART_'
-
-  #Cache parameters
-  CACHE_EXPIRY_DISKS_SECS = 3600
-  CACHE_EXPIRY_SMART_SECS = 30
-
   def initialize(system_gateway)
 
     @system_gateway = system_gateway
 
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::INFO
-
-    # Caching
-    @disks_cache = Diskcached.new(Configuration::get.app_cache_directory, CACHE_EXPIRY_DISKS_SECS)
-    @smart_cache = Diskcached.new(Configuration::get.app_cache_directory, CACHE_EXPIRY_SMART_SECS)
   end
 
   def esxi_off
@@ -212,7 +200,7 @@ class Services
   def get_disks
     @logger.info('[Services][disks.json] Requesting cache...')
 
-    @disks_cache.cache(CACHE_KEY_DISKS) do
+    Cache.instance.disks_cache.cache(Cache::CACHE_KEY_DISKS) do
       @logger.info('[Services][disks.json] Cache miss!')
       get_disks_uncached
     end
@@ -302,7 +290,7 @@ class Services
   def get_smart(disk_id)
     @logger.info('[Services][disk_smart.json] Requesting cache...')
 
-    @smart_cache.cache("#{CACHE_KEY_SMART_PREFIX}#{disk_id}") do
+    Cache.instance.smart_cache.cache("#{Cache::CACHE_KEY_SMART_PREFIX}#{disk_id}") do
       @logger.info('[Services][disk_smart.json] Cache miss!')
       get_smart_uncached(disk_id)
     end
@@ -325,7 +313,7 @@ class Services
     @logger.info('[Services][disks_smart.json] Requesting cache...')
 
     cache_key_suffix = disk_ids.join('-')
-    @smart_cache.cache("#{CACHE_KEY_SMART_PREFIX}#{cache_key_suffix}") do
+    Cache.instance.smart_cache.cache("#{Cache::CACHE_KEY_SMART_PREFIX}#{cache_key_suffix}") do
       @logger.info('[Services][disks_smart.json] Cache miss!')
       get_smart_multi_uncached(disk_ids)
     end
@@ -347,7 +335,7 @@ class Services
       result = parse_disk_smart(item)
 
       # Updates corresponding single cache
-      @smart_cache.set("#{CACHE_KEY_SMART_PREFIX}#{disk_id}", result)
+      Cache.instance.smart_cache.set("#{Cache::CACHE_KEY_SMART_PREFIX}#{disk_id}", result)
 
       # Builds returned value
       to_return << DiskSmartMulti.new(disk_id, result)

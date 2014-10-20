@@ -6,10 +6,10 @@ ENV['RACK_ENV'] = 'test'
 require 'json'
 require 'rack/test'
 require 'test/unit'
-require_relative 'utils/caching_helper'
 require_relative 'utils/system_gateway_mock'
 require_relative '../rupees/services'
 require_relative '../rupees/controller'
+require_relative '../rupees/common/cache'
 require_relative '../rupees/model/virtual_machine'
 require_relative '../rupees/model/schedule_status'
 require_relative '../rupees/model/ssh_error'
@@ -26,7 +26,7 @@ class ControllerTest < Test::Unit::TestCase
     @json_parser_opts = {:symbolize_names => true}
 
     # Clears caches to disable feature
-    CachingHelper::clear_caches
+    Cache.instance.clear_all
   end
 
   def test_json_service_should_set_response_headers_when_origin_request_header_set
