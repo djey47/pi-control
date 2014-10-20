@@ -39,7 +39,6 @@ class Controller < Sinatra::Base
     @big_brother = Logger.new(BIG_BROTHER_LOG_FILE_NAME)
     @big_brother.level = Logger::INFO
 
-
     super() #Required for correct Sinatra init
   end
 
