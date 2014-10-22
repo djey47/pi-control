@@ -66,7 +66,11 @@ class ControllerFocusOnCachingTest < Test::Unit::TestCase
     assert_true(@system_gateway.called?, 'Unproper call to system gateway')
 
     # Waits for expired TTL
-    sleep(Cache::CACHE_EXPIRY_SMART_SECS + 1)
+    duration = Cache::CACHE_EXPIRY_SMART_SECS + 1
+    puts '**'
+    puts "** Waiting #{duration} seconds till cache expires..."
+    puts '**'
+    sleep(duration)
 
     # Second call: cache miss
     get '/control/esxi/disk/2/smart.json'
