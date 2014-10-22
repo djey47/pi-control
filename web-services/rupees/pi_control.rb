@@ -23,7 +23,9 @@ class PiControl
   end
 
   def stop
-    @logger.info('[PiControl] Exiting pi-control.')
+    @logger.info('[PiControl] Exiting pi-control...')
+
+    Cache.instance.clear_all
   end
 end
 

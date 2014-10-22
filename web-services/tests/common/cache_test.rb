@@ -2,6 +2,7 @@
 
 require 'test/unit'
 require_relative '../../rupees/common/cache.rb'
+require_relative '../utils/cache_helper.rb'
 
 class CacheTest < Test::Unit::TestCase 
 
@@ -17,16 +18,7 @@ class CacheTest < Test::Unit::TestCase
 	def test_clear_all_should_remove_all_files
 		#given
 		cache_path = "#{Configuration::get.app_cache_directory}/*.cache"
-
-	    Cache.instance.fetch_disks_else do
-	      []
-	    end
-	    for i in 1..10 do
-		    Cache.instance.smart.cache("#{Cache::CACHE_KEY_SMART_PREFIX}#{i}") do
-		      []
-		    end
-		end
-		assert_false(Dir.glob(cache_path).empty?)
+		CacheHelper::populate(cache_path)
 
 		#when
 		Cache.instance.clear_all
