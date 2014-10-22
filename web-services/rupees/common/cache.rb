@@ -27,6 +27,8 @@ class Cache
   	end
 
   	def clear_all
+  		@logger.info('[Cache][all] Flushing...')
+
   		@disks.flush
   		@smart.flush
   	end
