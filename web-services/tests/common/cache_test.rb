@@ -17,8 +17,8 @@ class CacheTest < Test::Unit::TestCase
 	def test_clear_all_should_remove_all_files
 		#given
 		cache_path = "#{Configuration::get.app_cache_directory}/*.cache"
-		
-	    Cache.instance.disks.cache(Cache::CACHE_KEY_DISKS) do
+
+	    Cache.instance.fetch_disks_else do
 	      []
 	    end
 	    for i in 1..10 do

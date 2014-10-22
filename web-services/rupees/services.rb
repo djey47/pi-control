@@ -198,10 +198,9 @@ class Services
 
   # Cached
   def get_disks
-    @logger.info('[Services][disks.json] Requesting cache...')
+    @logger.info('[Services][disks.json]')
 
-    Cache.instance.disks.cache(Cache::CACHE_KEY_DISKS) do
-      @logger.info('[Services][disks.json] Cache miss!')
+    Cache.instance.fetch_disks_else do
       get_disks_uncached
     end
   end
@@ -286,10 +285,9 @@ class Services
 
   # Cached
   def get_smart(disk_id)
-    @logger.info('[Services][disk_smart.json] Requesting cache...')
+    @logger.info('[Services][disk_smart.json]')
 
-    Cache.instance.smart.cache("#{Cache::CACHE_KEY_SMART_PREFIX}#{disk_id}") do
-      @logger.info('[Services][disk_smart.json] Cache miss!')
+    Cache.instance.fetch_smart_else(disk_id) do
       get_smart_uncached(disk_id)
     end
   end
@@ -308,11 +306,9 @@ class Services
   end
 
   def get_smart_multi(disk_ids)
-    @logger.info('[Services][disks_smart.json] Requesting cache...')
+    @logger.info('[Services][disks_smart.json]')
 
-    cache_key_suffix = disk_ids.join('-')
-    Cache.instance.smart.cache("#{Cache::CACHE_KEY_SMART_PREFIX}#{cache_key_suffix}") do
-      @logger.info('[Services][disks_smart.json] Cache miss!')
+    Cache.instance.fetch_smart_else(disk_ids.join('-')) do
       get_smart_multi_uncached(disk_ids)
     end
   end
@@ -333,7 +329,7 @@ class Services
       result = parse_disk_smart(item)
 
       # Updates corresponding single cache
-      Cache.instance.smart.set("#{Cache::CACHE_KEY_SMART_PREFIX}#{disk_id}", result)
+      Cache.instance.store_smart(disk_id, result)
 
       # Builds returned value
       to_return << DiskSmartMulti.new(disk_id, result)
