@@ -57,7 +57,7 @@ class ControllerFocusOnCachingTest < Test::Unit::TestCase
   #SlowTest!
   def test_esxi_disk_smart_with_expired_ttl_should_always_call_gateway
 
-    #omit('Very slow test, needs to be enabled on purpose')
+    omit('Very slow test, needs to be enabled on purpose')
 
     # First call: cache miss
     get '/control/esxi/disk/2/smart.json'

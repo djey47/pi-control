@@ -29,8 +29,8 @@ class Cache
   	def clear_all
   		@logger.info('[Cache][all] Flushing...')
 
-  		@disks.flush
-  		@smart.flush
+  		@disks.flush rescue nil
+  		@smart.flush rescue nil
   	end
 
   	def fetch_disks_else
