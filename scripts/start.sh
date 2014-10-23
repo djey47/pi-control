@@ -1,19 +1,20 @@
 #! /bin/sh
-if [  "$#" -gt 1 ]; then
+
+if [ "$#" -gt 1 ]; then
 	echo "Usage: $0 [--check]"
 	echo "check: perform install check before starting pi-control."
 	exit 1
 fi
 
-function whichBinary {
+whichBinary () {
 	which $1
-	if [  "$?" -ne "0" ]; then
+	if [ "$?" -ne "0" ]; then
 		echo $2
 		exit 1
 	fi	
 }
 
-if [  "$1" == "--check" ]; then
+if [ "$1" = "--check" ]; then
 	echo "* Performing install check..."
 	
 	echo "  > Ruby interpreter..."
