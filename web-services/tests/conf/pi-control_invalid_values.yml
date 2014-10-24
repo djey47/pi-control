@@ -1,6 +1,7 @@
 # Main config file for pi-control
 # Tests invalid values
 app :
-  is-production : faux
+  is-production : false
+  server-port : 65536
 esxi :
   host-name : fooxi
