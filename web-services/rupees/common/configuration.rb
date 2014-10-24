@@ -4,6 +4,8 @@
 require 'logger'
 require 'yaml'
 
+require_relative '../utils/validator'
+
 module Configuration
 
   CONFIG_FILE_NAME = './web-services/conf/pi-control.yml'
@@ -18,14 +20,14 @@ module Configuration
   @logger.level = Logger::INFO
 
   # Reads configuration from given config file
-  # @param [String] config_file_name
+  # @param [String] config_file_name, defaults to CONFIG_FILE_NAME constant
   # @return [Conf] structure containing all parameters
   def self.get(config_file_name = CONFIG_FILE_NAME)
 
     begin
       contents = YAML.load_file(config_file_name)
 
-      app_is_production = contents['app']['is-production']
+      app_is_production = Validator::to_boolean?(contents['app']['is-production'])
       
       server_port = DEFAULT_SERVER_PORT
       server_port = contents['app']['server-port'] if contents['app']['server-port']

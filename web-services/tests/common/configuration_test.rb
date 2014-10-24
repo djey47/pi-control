@@ -9,6 +9,7 @@ class ConfigurationTest < Test::Unit::TestCase
   CONFIG_FILE_NAME = './web-services/tests/conf/pi-control.yml'
   CONFIG_FILE_NAME_OPTIONAL = './web-services/tests/conf/pi-control_optional.yml'
   INVALID_CONFIG_FILE_NAME = './web-services/tests/conf/pi-control_invalid.yml'
+  INVALID_VALUES_FILE_NAME = './web-services/tests/conf/pi-control_invalid_values.yml'
 
   def test_get_should_return_conf_from_yaml
 
@@ -38,7 +39,7 @@ class ConfigurationTest < Test::Unit::TestCase
     rescue => exception
       assert_equal('Invalid configuration', exception.message)
     end
-  end
+  end  
 
   def test_get_no_config_file_then_exception
 
@@ -49,4 +50,13 @@ class ConfigurationTest < Test::Unit::TestCase
       assert_equal('Invalid configuration', exception.message)
     end
   end
+
+  def test_get_invalid_values_then_exception
+    begin
+      Configuration::get(INVALID_VALUES_FILE_NAME)
+      fail
+    rescue => exception
+      assert_equal('Invalid configuration', exception.message)
+    end
+  end  
 end

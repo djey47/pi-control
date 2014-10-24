@@ -347,5 +347,4 @@ class Controller < Sinatra::Base
       500
     end
   end
-
 end
