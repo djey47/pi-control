@@ -31,6 +31,7 @@ module Configuration
       
       server_port = DEFAULT_SERVER_PORT
       server_port = contents['app']['server-port'] if contents['app']['server-port']
+      Validator::check_tcp_port(server_port)
 
       cache_directory = DEFAULT_CACHE_DIRECTORY
       cache_directory = contents['app']['cache-directory'] if contents['app']['cache-directory']
