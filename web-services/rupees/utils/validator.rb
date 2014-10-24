@@ -14,4 +14,9 @@ module Validator
 		port = Integer(value)
 		raise ArgumentError.new("invalid value for TCP port: \"#{port}\"") unless port.between?(1, 65535)
 	end
+
+	# Checks if provided value is designing a valid directory, else will raise ArgumentError
+	def self.check_directory_path(value)
+		raise ArgumentError.new("invalid value for directory path: \"#{value}\"") unless value =~ (/^(\/?[^<>:\"\'\/\s|?*]+)+\/?$/)		
+	end
 end

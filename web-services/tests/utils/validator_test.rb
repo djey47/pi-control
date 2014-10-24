@@ -47,7 +47,7 @@ class ValidatorTest < Test::Unit::TestCase
 		end
 	end	
 
-	def test_check_tcp_port_when_numer_out_of_range_should_raise_argument_error
+	def test_check_tcp_port_when_number_out_of_range_should_raise_argument_error
 		#given-when-then
 		begin
 			Validator::check_tcp_port?(65536)
@@ -56,4 +56,13 @@ class ValidatorTest < Test::Unit::TestCase
 		rescue => argument_error
 		end
 	end
+
+	def test_check_directory_path_when_valid_should_not_raise_argument_error
+		#given-when-then
+		Validator::check_directory_path('dir')
+		Validator::check_directory_path('dir/')
+		Validator::check_directory_path('/tmp/dir')
+		Validator::check_directory_path('./dir')
+		Validator::check_directory_path('../dir')
+	end		
 end
