@@ -17,6 +17,7 @@ class ConfigurationTest < Test::Unit::TestCase
 
     assert_equal(false, config.app_is_production, 'Invalid config value: app/is-production')
     assert_equal(4646, config.app_server_port, 'Invalid config value: app/server-port')
+    assert_equal('/opt/cache-directory', config.app_cache_directory, 'Invalid config value: app/cache-directory')
     assert_equal('test', config.esxi_host_name, 'Invalid config value: esxi/host-name')
     assert_equal('tester', config.esxi_user, 'Invalid config value: esxi/user')
     assert_equal('FF:FF:FF:FF:FF:FF', config.esxi_mac_address, 'Invalid config value: esxi/mac-address')
@@ -52,6 +53,7 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   def test_get_invalid_values_then_exception
+
     begin
       Configuration::get(INVALID_VALUES_FILE_NAME)
       fail
