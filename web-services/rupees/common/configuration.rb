@@ -35,6 +35,7 @@ module Configuration
 
       cache_directory = DEFAULT_CACHE_DIRECTORY
       cache_directory = contents['app']['cache-directory'] if contents['app']['cache-directory']
+      Validator::check_directory_path(cache_directory)
       
       host_name = contents['esxi']['host-name']
       user = contents['esxi']['user']
