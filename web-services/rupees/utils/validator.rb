@@ -20,4 +20,8 @@ module Validator
 	def self.check_directory_path(value)
 		raise ArgumentError.new("invalid value for directory path: \"#{value}\"") unless value =~ (/^(\/?[^<>:\"\'\/\s|?*]+)+\/?$/)		
 	end
+
+	def self.check_mac_address(value)
+		raise ArgumentError.new("invalid value for MAC address: \"#{value}\"") unless value =~ (/^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/i)		
+	end
 end

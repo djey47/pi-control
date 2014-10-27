@@ -74,5 +74,21 @@ class ValidatorTest < Test::Unit::TestCase
 			fail 'Should raise ArgumentError'
 		rescue => argument_error
 		end
+	end	
+
+	def test_check_mac_address_when_valid_should_not_raise_argument_error
+		#given-when-then
+		Validator::check_mac_address('3D:F2:C9:A6:B3:4F')
+		Validator::check_mac_address('3D-F2-C9-A6-B3-4F')
+	end	
+
+	def test_check_mac_address_when_invalid_should_raise_argument_error
+		#given-when-then
+		begin
+			Validator::check_mac_address('3D:F2:C9:A6:B3:4F:34')
+
+			fail 'Should raise ArgumentError'
+		rescue => argument_error
+		end
 	end
 end

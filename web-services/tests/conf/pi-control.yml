@@ -3,6 +3,7 @@
 app :
   is-production : false
   server-port : 4646
+  cache-directory : /opt/cache-directory
 esxi :
   host-name : test
   user : tester

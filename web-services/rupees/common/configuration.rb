@@ -38,8 +38,11 @@ module Configuration
       Validator::check_directory_path(cache_directory)
       
       host_name = contents['esxi']['host-name']
+
       user = contents['esxi']['user']
+
       mac_address = contents['esxi']['mac-address']
+      
       broadcast_address = contents['lan']['broadcast-address']
 
     rescue => exception

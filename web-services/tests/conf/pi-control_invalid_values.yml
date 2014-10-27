@@ -6,3 +6,4 @@ app :
   cache-directory : dir /
 esxi :
   host-name : fooxi
+  mac-address : 3D:F2:C9:A6:B3:4F:34
