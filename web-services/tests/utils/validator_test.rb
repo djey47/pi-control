@@ -90,5 +90,21 @@ class ValidatorTest < Test::Unit::TestCase
 			fail 'Should raise ArgumentError'
 		rescue => argument_error
 		end
+	end	
+
+	def test_check_ip_address_when_valid_should_not_raise_argument_error
+		#given-when-then
+		Validator::check_ip_address('192.168.0.1')
+		Validator::check_ip_address('255.255.255.255')
+	end	
+
+	def test_check_ip_address_when_invalid_should_raise_argument_error
+		#given-when-then
+		begin
+			Validator::check_ip_address('192.168.1.256')
+
+			fail 'Should raise ArgumentError'
+		rescue => argument_error
+		end
 	end
 end
