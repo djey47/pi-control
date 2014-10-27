@@ -42,8 +42,10 @@ module Configuration
       user = contents['esxi']['user']
 
       mac_address = contents['esxi']['mac-address']
-      
+      Validator::check_mac_address(mac_address)
+
       broadcast_address = contents['lan']['broadcast-address']
+      Validator::check_ip_address(broadcast_address)
 
     rescue => exception
       @logger.error("[Configuration] Config file not found or invalid! #{exception.inspect}")

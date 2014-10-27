@@ -7,3 +7,5 @@ app :
 esxi :
   host-name : fooxi
   mac-address : 3D:F2:C9:A6:B3:4F:34
+lan :
+  broadcast-address : 192.168.1.256

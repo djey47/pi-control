@@ -21,7 +21,14 @@ module Validator
 		raise ArgumentError.new("invalid value for directory path: \"#{value}\"") unless value =~ (/^(\/?[^<>:\"\'\/\s|?*]+)+\/?$/)		
 	end
 
+	# Checks if provided value is designing a valid MAC address, else will raise ArgumentError.
 	def self.check_mac_address(value)
 		raise ArgumentError.new("invalid value for MAC address: \"#{value}\"") unless value =~ (/^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/i)		
+	end	
+
+	# Checks if provided value is designing a valid IP address, else will raise ArgumentError.
+	def self.check_ip_address(value)
+		raise ArgumentError.new("invalid value for IP address: \"#{value}\"") unless value =~ 
+			(/^(([01]?\d\d?|2[0-4]\d|25[0-5])\.){3}([01]?\d\d?|2[0-4]\d|25[0-5])$/)		
 	end
 end
