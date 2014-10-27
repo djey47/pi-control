@@ -64,5 +64,15 @@ class ValidatorTest < Test::Unit::TestCase
 		Validator::check_directory_path('/tmp/dir')
 		Validator::check_directory_path('./dir')
 		Validator::check_directory_path('../dir')
-	end		
+	end	
+
+	def test_check_directory_path_when_invalid_should_raise_argument_error
+		#given-when-then
+		begin
+			Validator::check_directory_path?('//dir//')
+
+			fail 'Should raise ArgumentError'
+		rescue => argument_error
+		end
+	end
 end
