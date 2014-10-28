@@ -14,6 +14,20 @@ class SystemGateway
     @logger.level = Logger::INFO
   end
 
+  # Performs check of SSH configuration 
+  def ssh_auto_check(host, user_name, *commands)
+    @logger.info("[SystemGateway][ssh_auto_check] Hunting for #{commands} on remote #{host}...")
+    commands.each do |command|
+      begin
+        ssh(host, user_name, "which #{command}")
+      rescue => ssh_error
+        @logger.error("[SystemGateway][ssh_auto_check] Could not find '#{command}' via SSH: #{ssh_error.inspect}")
+        raise('Invalid SSH configuration')
+      end
+    end
+    @logger.info("[SystemGateway][ssh_auto_check] Pass!")
+  end
+
   # Executes given commands via SSH onto specified host
   def ssh(host, user_name, *commands)
     global_cmd = "ssh #{SSH_OPTIONS} #{user_name}@#{host} \"#{commands.join(';echo -;')}\""

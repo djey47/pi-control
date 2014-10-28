@@ -3,8 +3,9 @@
 require 'singleton'
 require 'logger'
 
-require_relative './common/cache'
-require_relative './common/configuration'
+require_relative 'system_gateway'
+require_relative 'common/cache'
+require_relative 'common/configuration'
 
 class PiControl
   include Singleton
@@ -17,13 +18,7 @@ class PiControl
   def run
     @logger.info('[PiControl] Welcome!')
 
-    @logger.info('[PiControl] Configuration self-check before starting...')
-    begin
-        Configuration::get
-    rescue => exception
-      @logger.error("[PiControl] #{exception.inspect}")
-      return
-    end
+    self_check rescue return
 
     server_thread = Thread.new {
       @logger.info('[PiControl] Starting HTTP server...')
@@ -45,6 +40,19 @@ class PiControl
     end
 
     @logger.info('[PiControl] Goodbye!')
+  end
+
+  def self_check
+    @logger.info('[PiControl] Configuration self-check before starting...')
+    begin
+        conf = Configuration::get
+
+        SystemGateway.new.ssh_auto_check(conf.esxi_host_name, conf.esxi_user, 'vim-cmd', 'esxcli')
+    rescue => exception
+      @logger.error("[PiControl] #{exception.inspect}")
+      raise exception
+    end
+    @logger.info('[PiControl] Configuration self-check done!')
   end
 end
 
