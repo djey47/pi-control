@@ -25,7 +25,7 @@ class SystemGateway
         raise('Invalid SSH configuration')
       end
     end
-    @logger.info("[SystemGateway][ssh_auto_check] Pass!")
+    @logger.info('[SystemGateway][ssh_auto_check] Pass!')
   end
 
   # Executes given commands via SSH onto specified host

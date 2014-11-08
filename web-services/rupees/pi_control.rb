@@ -47,7 +47,7 @@ class PiControl
     begin
         conf = Configuration::get
 
-        SystemGateway.new.ssh_auto_check(conf.esxi_host_name, conf.esxi_user, 'vim-cmd', 'esxcli')
+        SystemGateway.new.ssh_auto_check(conf.esxi_host_name, conf.esxi_user, 'vim-cmd', 'esxcli') if conf.app_is_production
     rescue => exception
       @logger.error("[PiControl] #{exception.inspect}")
       raise exception
