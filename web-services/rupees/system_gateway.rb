@@ -62,7 +62,7 @@ class SystemGateway
   # Removes entry from crontab
   def crontab_remove(*ids)
     @logger.info("[SystemGateway][crontab_remove] Calling CronEdit::Crontab.Remove(#{ids})...")
-    CronEdit::Crontab.Remove(ids)
+    CronEdit::Crontab.Remove(*ids)
     @logger.info('[SystemGateway][crontab_remove] Call ended.')
   end
 
