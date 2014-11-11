@@ -6,6 +6,7 @@ if [ "$#" -gt 1 ]; then
 	exit 1
 fi
 
+#Tries to resolve binary given in first arg, and exits with message given in second arg if it fails.
 whichBinary () {
 	which $1
 	if [ "$?" -ne "0" ]; then
@@ -27,6 +28,7 @@ if [ "$1" = "--check" ]; then
 	fi
 	
 	echo "  > Local commands..."
+	whichBinary curl "! ERROR: curl not installed, please run 'apt-get install curl'"
 	whichBinary ssh "! ERROR: ssh not installed, please run 'apt-get install ssh'"
 	whichBinary wakeonlan "! ERROR: wakeonlan not installed, please run 'apt-get install wakeonlan'"
 
