@@ -1,6 +1,8 @@
 pi-control
 ==========
 
+[![Build Status](https://travis-ci.org/djey47/pi-control.svg?branch=master)](https://travis-ci.org/djey47/pi-control)
+
 Set of web-services to control/monitor ESXi hypervisor from a linux-based, always-ON device (e.g. Raspberry Pi).
 
 Featuring [complete API](https://github.com/djey47/pi-control/wiki/API-reference): 
