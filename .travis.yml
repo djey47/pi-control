@@ -1,4 +1,4 @@
 language: ruby
 rvm:
   - "2.1.0"
-script: cd web-services && bundle install && ./scripts/test.sh
+script: cd web-services && bundle install && cd - && ./scripts/test.sh
