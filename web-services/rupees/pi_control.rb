@@ -18,7 +18,12 @@ class PiControl
   def run
     @logger.info('[PiControl] Welcome!')
 
-    self_check rescue return
+    # SELF-CHECK should not prevent pi-control from starting (e.g when ESXI not ready or started, yet)
+    begin
+      self_check
+    rescue => exception
+      @logger.warn("[PiControl] #{exception.inspect}")
+    end
 
     server_thread = Thread.new {
       @logger.info('[PiControl] Starting HTTP server...')
