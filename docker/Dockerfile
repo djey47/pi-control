@@ -1,8 +1,8 @@
 FROM alpine
 LABEL multi.description="Image running Pi-Control services" \
 multi.version="1.0"
-ENV http_proxy "http://10.110.20.66:3128"
-ENV https_proxy "https://10.110.20.66:3128"
+#ENV http_proxy "http://10.110.20.66:3128"
+#ENV https_proxy "https://10.110.20.66:3128"
 
 RUN apk add --update ruby ruby-irb openssl ruby-bundler curl && rm -rf /var/cache/apk/*
 
