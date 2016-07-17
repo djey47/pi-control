@@ -1,0 +1,10 @@
+# Main config file for pi-control in a Docker image
+app :
+  is-production : true
+  server-port : 4600
+esxi :
+  host-name : {{ESXI_HOST}}
+  user : {{ESXI_USER}}
+  mac-address : {{ESXI_MAC_ADDR}}
+lan :
+  broadcast-address : {{LAN_BROADCAST_ADDR}}

@@ -1,7 +1,7 @@
 FROM resin/rpi-raspbian:jessie-20160622
 LABEL multi.description="Image running Pi-Control services on rPi" \
 multi.version="1.0"
-EXPOSE 4601
+EXPOSE 4600
 
 RUN apt update 
 RUN apt install ruby bundler
@@ -14,8 +14,10 @@ RUN mkdir -p /opt/pi-control
 
 RUN tar xzf /tmp/pi-control.tar.gz -C /opt/pi-control && rm /tmp/pi-control.tar.gz
 
-ADD ./pi-control.yml /opt/pi-control/
-
 WORKDIR /opt/pi-control
 RUN cd web-services && bundle install && cd -
-CMD ["./scripts/start.sh"]
+
+ADD pi-control.yml /opt/pi-control/web-services/conf/
+ADD start.sh /opt/
+
+CMD ["/opt/start.sh"]
