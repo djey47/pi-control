@@ -1,4 +1,3 @@
-source 'https://rubygems.org'
 source 'http://rubygems.org'
 
 gem 'cronedit', '0.3.0'
