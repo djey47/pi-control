@@ -24,6 +24,7 @@ see **./web-services/Gemfile**
 ### Runtime gems:
 - cronedit v0.3.0
 - diskcached v1.1.0
+- json v1.8.3
 - sinatra v1.4.4
   - rack v1.5.2
   - tilt v1.4.1
@@ -36,17 +37,10 @@ see **./web-services/Gemfile**
 ### Utility gems
 - bundler v1.6.2
 
-How to install?
----------------
+How to install, configure and use?
+----------------------------------
 
-Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-install%3F)
-
-Configuration:
---------------
-
-Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-configure%3F)
-
-How to use:
------------
-
-Please have a look at [wiki](https://github.com/djey47/pi-control/wiki/How-to-use%3F)
+Please have a look at:
+- [installing](https://github.com/djey47/pi-control/wiki/How-to-install%3F)
+- [configuring](https://github.com/djey47/pi-control/wiki/How-to-configure%3F)
+- [using](https://github.com/djey47/pi-control/wiki/How-to-use%3F)
