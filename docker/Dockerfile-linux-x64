@@ -1,19 +1,16 @@
 FROM alpine:latest
 LABEL multi.description="Image running Pi-Control services on x64 Linux" \
-multi.version="1.0"
+multi.version="0.2"
 EXPOSE 4600
 
 #ENV http_proxy "http://10.254.1.13:8080"
 #ENV https_proxy "http://10.254.1.13:8080"
 
-#Wakeonlan not available with Alpine ?!
-#RUN apk add --update ruby ruby-bundler ruby-json curl openssl openssh wakeonlan && rm -rf /var/cache/apk/*
-RUN apk add --update ruby ruby-bundler ruby-json curl openssl openssh && rm -rf /var/cache/apk/*
+RUN apk add --update ruby ruby-bundler ruby-json curl openssl openssh perl && rm -rf /var/cache/apk/*
+ADD wakeonlan /usr/bin/
 
 RUN curl -Lk https://github.com/djey47/pi-control/raw/master/release/pi-control-ruby-20160328.R1.05.tar.gz > /tmp/pi-control.tar.gz
-
 RUN mkdir -p /opt/pi-control
-
 RUN tar xzf /tmp/pi-control.tar.gz -C /opt/pi-control && rm /tmp/pi-control.tar.gz
 
 WORKDIR /opt/pi-control
